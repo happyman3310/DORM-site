@@ -1,0 +1,115 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@900&family=Ubuntu:wght@400;600&family=JetBrains+Mono&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-blue: #034977;
+  --accent-orange: #FF9218;
+  --brand-yellow: #FFE65B;
+  --surface-gray: #2B2B2B;
+  --text-light: #F5F5F5;
+}
+
+body {
+  font-family: 'Ubuntu', sans-serif;
+  background-color: #202020;
+  color: var(--text-light);
+}
+
+.gradient-text {
+  background: linear-gradient(to right, var(--primary-blue), var(--accent-orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+.header-transition {
+  transition: background-color 0.3s ease;
+}
+
+.swiper-pagination-bullet {
+  background-color: var(--accent-orange) !important;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: var(--accent-orange) !important;
+}
+
+.roadmap-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  border-left: 1px dashed rgba(245, 245, 245, 0.4);
+  transform: translateX(-50%);
+  z-index: 0;
+}
+
+.roadmap-node {
+  position: relative;
+  z-index: 1;
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+}
+
+.roadmap-node.active {
+  transform: scale(1.4);
+  box-shadow: 0 0 15px rgba(3, 73, 119, 0.7);
+}
+
+.team-image {
+  filter: grayscale(1);
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.team-image:hover {
+  filter: grayscale(0);
+  transform: scale(1.05);
+}
+
+.footer-input {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--text-light);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+}
+
+.footer-input:focus {
+  outline: none;
+  border-color: var(--accent-orange);
+}
+
+.footer-button {
+  background-color: var(--accent-orange);
+  color: #000;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.footer-button:hover {
+  background-color: #ff7b00;
+}
+
+.social-icon {
+  color: var(--text-light);
+  transition: color 0.3s ease;
+}
+
+.social-icon:hover {
+  color: var(--accent-orange);
+}
+
+/* Add styles for select dropdown */
+[data-heroui-select-popover] {
+  --heroui-select-popover-background: var(--surface-gray);
+  --heroui-select-item-hover-background: rgba(255, 146, 24, 0.2);
+  --heroui-select-item-hover-text: var(--text-light);
+  --heroui-select-item-selected-background: rgba(255, 146, 24, 0.4);
+  --heroui-select-item-selected-text: var(--text-light);
+}
