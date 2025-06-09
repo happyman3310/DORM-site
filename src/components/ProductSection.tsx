@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Input, Textarea, Checkbox, Select, SelectItem, addToast } from "@heroui/react";
+import { Button, Input, Textarea, Checkbox, Select, useToast } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { useLanguage } from "../context/LanguageContext";
 
@@ -13,6 +13,7 @@ interface FormData {
 
 const ProductSection: React.FC = () => {
   const { t } = useLanguage();
+  const toast = useToast();
   const [formData, setFormData] = React.useState<FormData>({
     name: "",
     birthYear: "",
@@ -45,10 +46,10 @@ const ProductSection: React.FC = () => {
         consent: false,
       });
 
-      addToast({
+      toast({
         title: t("product.success"),
         description: formData.email,
-        color: "success",
+        status: "success",
       });
     }, 1500);
   };
@@ -91,7 +92,7 @@ const ProductSection: React.FC = () => {
               className="shadow-xl rounded-lg overflow-hidden lg:ml-12"
             >
               <img
-                src="https://img.heroui.chat/image/dashboard?w=600&h=400&u=mockup-2"
+                src="https://placehold.co/600x400?text=Mockup+2"
                 alt="DORM Platform Mockup 2"
                 className="w-full h-auto"
               />
@@ -106,7 +107,7 @@ const ProductSection: React.FC = () => {
               className="shadow-xl rounded-lg overflow-hidden"
             >
               <img
-                src="https://img.heroui.chat/image/dashboard?w=600&h=400&u=mockup-3"
+                src="https://placehold.co/600x400?text=Mockup+3"
                 alt="DORM Platform Mockup 3"
                 className="w-full h-auto"
               />
@@ -127,58 +128,46 @@ const ProductSection: React.FC = () => {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <Input
-                label={t("product.name")}
                 placeholder="Иван Громов"
                 value={formData.name}
-                onValueChange={(value) => handleChange("name", value)}
+                onChange={(e) => handleChange("name", e.target.value)}
                 required
                 className="bg-surface-gray"
               />
 
               <Select
-                label={t("product.birthyear")}
                 placeholder="1990"
-                selectedKeys={formData.birthYear ? [formData.birthYear] : []}
-                onSelectionChange={(keys) => {
-                  const selected = Array.from(keys)[0] as string;
-                  handleChange("birthYear", selected);
-                }}
+                value={formData.birthYear}
+                onChange={(e) => handleChange("birthYear", e.target.value)}
                 required
                 className="bg-surface-gray"
-                popoverProps={{
-                  classNames: {
-                    content: "bg-surface-gray text-text-light"
-                  }
-                }}
               >
                 {generateYearOptions().map((year) => (
-                  <SelectItem key={year}>{year}</SelectItem>
+                  <option key={year} value={year}>{year}</option>
                 ))}
               </Select>
 
               <Input
                 type="email"
-                label={t("product.email")}
                 placeholder="ivan.gromov@example.com"
                 value={formData.email}
-                onValueChange={(value) => handleChange("email", value)}
+                onChange={(e) => handleChange("email", e.target.value)}
                 required
                 className="bg-surface-gray"
               />
 
               <Textarea
-                label={t("product.about")}
                 placeholder="Расскажите немного о себе..."
                 value={formData.about}
-                onValueChange={(value) => handleChange("about", value)}
+                onChange={(e) => handleChange("about", e.target.value)}
                 required
                 className="bg-surface-gray"
                 minRows={3}
               />
 
               <Checkbox
-                isSelected={formData.consent}
-                onValueChange={(value) => handleChange("consent", value)}
+                isChecked={formData.consent}
+                onChange={(e) => handleChange("consent", e.target.checked)}
                 required
               >
                 {t("product.consent")}
@@ -186,7 +175,7 @@ const ProductSection: React.FC = () => {
 
               <Button
                 type="submit"
-                color="secondary"
+                colorScheme="orange"
                 className="bg-accent-orange text-black w-full"
                 isLoading={isSubmitting}
                 isDisabled={isSubmitting || !formData.consent}

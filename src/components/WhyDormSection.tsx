@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardBody } from "@heroui/react";
+import { Card, CardBody } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { useLanguage } from "../context/LanguageContext";
 
@@ -53,7 +53,7 @@ const WhyDormSection: React.FC = () => {
               className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96"
             >
               <img
-                src="https://img.heroui.chat/image/ai?w=640&h=640&u=glossy-3d-letter-d"
+                src="https://placehold.co/640x640?text=D"
                 alt="DORM 3D Letter"
                 className="w-full h-full object-contain"
               />
@@ -79,8 +79,8 @@ const WhyDormSection: React.FC = () => {
               >
                 <Card
                   className="bg-surface-gray ring-1 ring-primary-blue/40"
-                  isPressable
-                  onPress={() => setActiveCard(index)}
+                  cursor="pointer"
+                  onClick={() => setActiveCard(index)}
                 >
                   <CardBody className="flex flex-row items-start gap-4 p-6">
                     <div className="text-4xl">{card.emoji}</div>

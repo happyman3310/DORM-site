@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs, Tab, Card, CardBody } from "@heroui/react";
+import { Tabs, TabList, TabPanels, Tab, TabPanel, Card, CardBody } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { useLanguage } from "../context/LanguageContext";
 
@@ -158,25 +158,30 @@ const LegalPage: React.FC = () => {
         </motion.h1>
 
         <Tabs
-          aria-label="Legal documents"
-          selectedKey={selected}
-          onSelectionChange={setSelected as any}
+          index={selected === "terms" ? 0 : 1}
+          onChange={(index) => setSelected(index === 0 ? "terms" : "privacy")}
           className="mb-8"
         >
-          <Tab key="terms" title={t("legal.terms")}>
-            <Card>
-              <CardBody className="font-mono">
-                {renderMarkdown(termsContent)}
-              </CardBody>
-            </Card>
-          </Tab>
-          <Tab key="privacy" title={t("legal.privacy")}>
-            <Card>
-              <CardBody className="font-mono">
-                {renderMarkdown(privacyContent)}
-              </CardBody>
-            </Card>
-          </Tab>
+          <TabList>
+            <Tab>{t("legal.terms")}</Tab>
+            <Tab>{t("legal.privacy")}</Tab>
+          </TabList>
+          <TabPanels>
+            <TabPanel>
+              <Card>
+                <CardBody className="font-mono">
+                  {renderMarkdown(termsContent)}
+                </CardBody>
+              </Card>
+            </TabPanel>
+            <TabPanel>
+              <Card>
+                <CardBody className="font-mono">
+                  {renderMarkdown(privacyContent)}
+                </CardBody>
+              </Card>
+            </TabPanel>
+          </TabPanels>
         </Tabs>
       </div>
     </div>
