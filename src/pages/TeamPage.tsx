@@ -238,16 +238,7 @@ const TeamPage: React.FC = () => {
                     </div>
                   </ModalBody>
                   <ModalFooter>
-                    // ... внутри ModalContent
-{(onClose) => (
-  <>
-    <ModalHeader>{selectedMember?.name}</ModalHeader>
-    <ModalBody>…</ModalBody>
-    <ModalFooter>
-      <Button onPress={onClose}>{t("team.modal.close")}</Button>
-    </ModalFooter>
-  </>
-)}
+                    <Button onPress={onClose}>{t("team.modal.close")}</Button>
                   </ModalFooter>
                 </>
               )}
