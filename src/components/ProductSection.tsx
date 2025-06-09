@@ -152,9 +152,7 @@ const ProductSection: React.FC = () => {
                 }}
               >
                 {generateYearOptions().map((year) => (
-                  <SelectItem key={year} value={year}>
-                    {year}
-                  </SelectItem>
+                  <SelectItem key={year}>{year}</SelectItem>
                 ))}
               </Select>
 
