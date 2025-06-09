@@ -156,14 +156,14 @@ const ProductSection: React.FC = () => {
                 className="bg-surface-gray"
               />
 
-              <Textarea
-                placeholder="Расскажите немного о себе..."
-                value={formData.about}
-                onChange={(e) => handleChange("about", e.target.value)}
-                required
-                className="bg-surface-gray"
-                minRows={3}
-              />
+           <Textarea
+  placeholder={placeholder}
+  value={value}
+  onChange={onChange}
+  required={required}
+  className={className}
+  rows={3}
+/>
 
               <Checkbox
                 isChecked={formData.consent}
