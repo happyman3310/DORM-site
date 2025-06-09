@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@heroui/react";
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { Icon } from "@iconify/react";
 import { useLanguage } from "../context/LanguageContext";
@@ -16,7 +16,7 @@ interface TeamMember {
 
 const TeamSection: React.FC = () => {
   const { t } = useLanguage();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedMember, setSelectedMember] = React.useState<TeamMember | null>(null);
 
   // Sample team members data
@@ -118,16 +118,15 @@ const TeamSection: React.FC = () => {
       </div>
 
       {/* Member details modal */}
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
+      <Modal isOpen={isOpen} onClose={onClose} size="lg">
+        <ModalOverlay />
         <ModalContent>
-          {(onClose) => (
+          {selectedMember && (
             <>
-              {selectedMember && (
-                <>
-                  <ModalHeader className="flex flex-col gap-1 bg-surface-gray text-text-light">
-                    {selectedMember.name}
-                  </ModalHeader>
-                  <ModalBody className="bg-surface-gray text-text-light">
+              <ModalHeader className="flex flex-col gap-1 bg-surface-gray text-text-light">
+                {selectedMember.name}
+              </ModalHeader>
+              <ModalBody className="bg-surface-gray text-text-light">
                     <div className="flex flex-col md:flex-row gap-6">
                       <img
                         src={selectedMember.image}
@@ -164,13 +163,11 @@ const TeamSection: React.FC = () => {
                       </div>
                     </div>
                   </ModalBody>
-                  <ModalFooter className="bg-surface-gray">
-                    <Button color="secondary" className="bg-accent-orange text-black" onPress={onClose}>
-                      Close
-                    </Button>
-                  </ModalFooter>
-                </>
-              )}
+              <ModalFooter className="bg-surface-gray">
+                <Button colorScheme="orange" className="text-black" onClick={onClose}>
+                  Close
+                </Button>
+              </ModalFooter>
             </>
           )}
         </ModalContent>

@@ -104,12 +104,3 @@ body {
 .social-icon:hover {
   color: var(--accent-orange);
 }
-
-/* Add styles for select dropdown */
-[data-heroui-select-popover] {
-  --heroui-select-popover-background: var(--surface-gray);
-  --heroui-select-item-hover-background: rgba(255, 146, 24, 0.2);
-  --heroui-select-item-hover-text: var(--text-light);
-  --heroui-select-item-selected-background: rgba(255, 146, 24, 0.4);
-  --heroui-select-item-selected-text: var(--text-light);
-}

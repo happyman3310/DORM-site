@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "@heroui/react";
+import { Button } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { useLanguage } from "../context/LanguageContext";
 
@@ -96,9 +96,9 @@ const HeroSection: React.FC = () => {
               whileTap={{ scale: 0.95 }}
             >
               <Button
-                color="secondary"
+                colorScheme="orange"
                 size="lg"
-                onPress={scrollToProduct}
+                onClick={scrollToProduct}
                 className="font-ubuntu text-lg bg-accent-orange text-black px-8 py-6"
               >
                 {t("hero.join")}

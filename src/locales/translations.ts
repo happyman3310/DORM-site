@@ -67,6 +67,7 @@ const translations = {
     "team.role.marketing": "Директор по маркетингу",
     "team.role.SMM": "SMM-специалист",
     "team.role.content-making": "Контент-мейкер",
+    "team.modal.close": "Закрыть",
 
     
     // Footer
@@ -153,6 +154,7 @@ const translations = {
     "team.role.marketing": "Marketing Director",
     "team.role.SMM": "SMM Specialist",
     "team.role.content-making": "Content Creator",
+    "team.modal.close": "Close",
 
     
     // Footer

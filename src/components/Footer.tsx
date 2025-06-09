@@ -1,6 +1,6 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Button, Link } from "@heroui/react";
+import { Button, Link as ChakraLink } from "@chakra-ui/react";
 import { Icon } from "@iconify/react";
 import { useLanguage } from "../context/LanguageContext";
 
@@ -54,14 +54,14 @@ const Footer: React.FC = () => {
             </h3>
             <nav className="flex flex-col space-y-2">
               {navItems.map((item) => (
-                <Link
+                <ChakraLink
                   key={item.key}
                   as={RouterLink}
                   to={item.href}
                   className="text-text-light/80 hover:text-accent-orange transition-colors"
                 >
                   {item.label}
-                </Link>
+                </ChakraLink>
               ))}
             </nav>
           </div>
@@ -105,13 +105,13 @@ const Footer: React.FC = () => {
         </div>
 
         <div className="mt-8 pt-6 border-t border-text-light/10 flex justify-between items-center">
-          <Link
+          <ChakraLink
             as={RouterLink}
             to="/legal"
             className="text-text-light/60 hover:text-accent-orange transition-colors"
           >
             {t("footer.legal")}
-          </Link>
+          </ChakraLink>
         </div>
       </div>
     </footer>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@heroui/react";
+import { Modal, ModalOverlay, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { Icon } from "@iconify/react";
 import { useLanguage } from "../context/LanguageContext";
@@ -16,7 +16,7 @@ interface TeamMember {
 
 const TeamPage: React.FC = () => {
   const { t } = useLanguage();
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [selectedMember, setSelectedMember] = React.useState<TeamMember | null>(null);
 
   // Extended team members data for full gallery
@@ -26,7 +26,7 @@ const TeamPage: React.FC = () => {
       name: "Даниил Петров",
       role: t("team.role.founder"),
       bio: "Основатель DORM Community с 10-летним опытом в IT и образовании. Выпускник МФТИ, серийный предприниматель, создавший несколько успешных стартапов в EdTech сфере. Верит в силу сообщества и потенциал каждого человека.",
-      image: "https://img.heroui.chat/image/avatar?w=280&h=280&u=team-1",
+      image: "https://placehold.co/280x280?text=1",
       telegram: "https://t.me/daniil",
       linkedin: "https://linkedin.com/in/daniil"
     },
@@ -35,7 +35,7 @@ const TeamPage: React.FC = () => {
       name: "Алексей Иванов",
       role: t("team.role.cto"),
       bio: "Технический директор с опытом разработки высоконагруженных систем. Выпускник ВШЭ, ранее работал в Яндексе и Mail.ru Group. Эксперт в области искусственного интеллекта и машинного обучения.",
-      image: "https://img.heroui.chat/image/avatar?w=280&h=280&u=team-2",
+      image: "https://placehold.co/280x280?text=2",
       telegram: "https://t.me/alexey",
       linkedin: "https://linkedin.com/in/alexey"
     },
@@ -44,7 +44,7 @@ const TeamPage: React.FC = () => {
       name: "Мария Соколова",
       role: t("team.role.designer"),
       bio: "Главный дизайнер DORM с опытом работы в международных агентствах. Выпускница Британской высшей школы дизайна. Специализируется на UX/UI дизайне и создании уникальных пользовательских интерфейсов.",
-      image: "https://img.heroui.chat/image/avatar?w=280&h=280&u=team-3",
+      image: "https://placehold.co/280x280?text=3",
       telegram: "https://t.me/maria",
       linkedin: "https://linkedin.com/in/maria"
     },
@@ -53,7 +53,7 @@ const TeamPage: React.FC = () => {
       name: "Сергей Новиков",
       role: t("team.role.marketing"),
       bio: "Директор по маркетингу с 8-летним опытом в digital-маркетинге. Ранее возглавлял маркетинговые отделы в крупных технологических компаниях. Эксперт в области growth hacking и построения бренда.",
-      image: "https://img.heroui.chat/image/avatar?w=280&h=280&u=team-4",
+      image: "https://placehold.co/280x280?text=4",
       telegram: "https://t.me/sergey",
       linkedin: "https://linkedin.com/in/sergey"
     },
@@ -63,7 +63,7 @@ const TeamPage: React.FC = () => {
       name: "Екатерина Смирнова",
       role: "Руководитель отдела разработки",
       bio: "Опытный разработчик и руководитель команды с более чем 7-летним стажем в создании сложных веб-приложений. Специализируется на архитектуре и оптимизации производительности.",
-      image: "https://img.heroui.chat/image/avatar?w=280&h=280&u=team-5",
+      image: "https://placehold.co/280x280?text=5",
       telegram: "https://t.me/ekaterina",
       linkedin: "https://linkedin.com/in/ekaterina"
     },
@@ -72,7 +72,7 @@ const TeamPage: React.FC = () => {
       name: "Андрей Козлов",
       role: "Руководитель отдела продукта",
       bio: "Продакт-менеджер с опытом работы в крупных IT-компаниях. Отвечает за стратегию развития продукта и взаимодействие с пользователями.",
-      image: "https://img.heroui.chat/image/avatar?w=280&h=280&u=team-6",
+      image: "https://placehold.co/280x280?text=6",
       telegram: "https://t.me/andrey",
       linkedin: "https://linkedin.com/in/andrey"
     },
@@ -81,7 +81,7 @@ const TeamPage: React.FC = () => {
       name: "Ольга Морозова",
       role: "Руководитель отдела контента",
       bio: "Опытный редактор и контент-стратег. Отвечает за создание и курирование образовательных материалов на платформе.",
-      image: "https://img.heroui.chat/image/avatar?w=280&h=280&u=team-7",
+      image: "https://placehold.co/280x280?text=7",
       telegram: "https://t.me/olga",
       linkedin: "https://linkedin.com/in/olga"
     },
@@ -90,7 +90,7 @@ const TeamPage: React.FC = () => {
       name: "Михаил Волков",
       role: "Руководитель отдела аналитики",
       bio: "Специалист по данным с опытом работы в аналитических отделах крупных компаний. Отвечает за сбор и анализ данных о пользователях и использовании платформы.",
-      image: "https://img.heroui.chat/image/avatar?w=280&h=280&u=team-8",
+      image: "https://placehold.co/280x280?text=8",
       telegram: "https://t.me/mikhail",
       linkedin: "https://linkedin.com/in/mikhail"
     },
@@ -99,7 +99,7 @@ const TeamPage: React.FC = () => {
       name: "Анна Белова",
       role: "Руководитель отдела поддержки",
       bio: "Специалист по работе с клиентами с многолетним опытом. Отвечает за качество обслуживания пользователей и решение их проблем.",
-      image: "https://img.heroui.chat/image/avatar?w=280&h=280&u=team-9",
+      image: "https://placehold.co/280x280?text=9",
       telegram: "https://t.me/anna",
       linkedin: "https://linkedin.com/in/anna"
     },
@@ -108,7 +108,7 @@ const TeamPage: React.FC = () => {
       role: "Руководитель отдела HR",
       name: "Дмитрий Соловьев",
       bio: "Опытный HR-специалист, отвечающий за подбор и развитие команды. Создает комфортную рабочую среду и поддерживает корпоративную культуру.",
-      image: "https://img.heroui.chat/image/avatar?w=280&h=280&u=team-10",
+      image: "https://placehold.co/280x280?text=10",
       telegram: "https://t.me/dmitry",
       linkedin: "https://linkedin.com/in/dmitry"
     },
@@ -117,7 +117,7 @@ const TeamPage: React.FC = () => {
       name: "Наталья Кузнецова",
       role: "Финансовый директор",
       bio: "Опытный финансист с образованием в области экономики. Отвечает за финансовую стратегию и инвестиционную политику компании.",
-      image: "https://img.heroui.chat/image/avatar?w=280&h=280&u=team-11",
+      image: "https://placehold.co/280x280?text=11",
       telegram: "https://t.me/natalia",
       linkedin: "https://linkedin.com/in/natalia"
     },
@@ -126,7 +126,7 @@ const TeamPage: React.FC = () => {
       name: "Игорь Лебедев",
       role: "Руководитель отдела безопасности",
       bio: "Специалист по информационной безопасности с опытом работы в крупных IT-компаниях. Отвечает за защиту данных пользователей и безопасность платформы.",
-      image: "https://img.heroui.chat/image/avatar?w=280&h=280&u=team-12",
+      image: "https://placehold.co/280x280?text=12",
       telegram: "https://t.me/igor",
       linkedin: "https://linkedin.com/in/igor"
     }
@@ -191,21 +191,21 @@ const TeamPage: React.FC = () => {
       </div>
 
       {/* Member details modal */}
-      <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
+      <Modal isOpen={isOpen} onClose={onClose} size="lg">
+        <ModalOverlay />
         <ModalContent>
-          {(onClose) => (
-            selectedMember && (
-              <>
-                <ModalHeader className="flex flex-col gap-1">
-                  {selectedMember.name}
-                </ModalHeader>
-                <ModalBody>
-                  <div className="flex flex-col md:flex-row gap-6">
-                    <img
-                      src={selectedMember.image}
-                      alt={selectedMember.name}
-                      className="w-full md:w-48 h-48 object-cover rounded-lg"
-                    />
+          {selectedMember && (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                {selectedMember.name}
+              </ModalHeader>
+              <ModalBody>
+                <div className="flex flex-col md:flex-row gap-6">
+                  <img
+                    src={selectedMember.image}
+                    alt={selectedMember.name}
+                    className="w-full md:w-48 h-48 object-cover rounded-lg"
+                  />
                     <div>
                       <h3 className="text-xl font-semibold text-accent-orange mb-2">
                         {selectedMember.role}
@@ -236,13 +236,10 @@ const TeamPage: React.FC = () => {
                     </div>
 
                   </ModalBody>
-                  <ModalFooter>
-                    <Button onPress={onClose}>{t("team.modal.close")}</Button>
-                  </ModalFooter>
-                </>
-              )}
+              <ModalFooter>
+                <Button onClick={onClose}>{t("team.modal.close")}</Button>
+              </ModalFooter>
             </>
-
           )}
         </ModalContent>
       </Modal>

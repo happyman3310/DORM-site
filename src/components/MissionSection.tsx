@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "@heroui/react";
+import { Button } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { Icon } from "@iconify/react";
 import { useLanguage } from "../context/LanguageContext";
@@ -60,10 +60,10 @@ const MissionSection: React.FC = () => {
               whileTap={{ scale: 0.95 }}
             >
               <Button
-                color="secondary"
+                colorScheme="orange"
                 className="bg-accent-orange text-black"
-                onPress={handleContactClick}
-                startContent={<Icon icon="lucide:mail" />}
+                onClick={handleContactClick}
+                leftIcon={<Icon icon="lucide:mail" />}
               >
                 {t("mission.button")}
               </Button>

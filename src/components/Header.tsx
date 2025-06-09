@@ -1,6 +1,6 @@
 import React from "react";
 import { Link as RouterLink } from "react-router-dom";
-import { Button, Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Link } from "@heroui/react";
+import { Button, Menu, MenuButton, MenuList, MenuItem, Link as ChakraLink } from "@chakra-ui/react";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import { useLanguage } from "../context/LanguageContext";
@@ -53,7 +53,7 @@ const Header: React.FC = () => {
         {/* Navigation */}
         <nav className="hidden md:flex items-center space-x-6">
           {navItems.map((item) => (
-            <Link
+            <ChakraLink
               key={item.key}
               as={RouterLink}
               to={item.href}
@@ -61,47 +61,32 @@ const Header: React.FC = () => {
             >
               {item.label}
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent-orange transition-all duration-300 group-hover:w-full"></span>
-            </Link>
+            </ChakraLink>
           ))}
         </nav>
 
         {/* Right section: Language switcher and CTA */}
         <div className="flex items-center space-x-4">
-          <Dropdown>
-            <DropdownTrigger>
-              <Button
-                variant="light"
-                className="min-w-0 px-2 font-mono"
-                startContent={
-                  <Icon
-                    icon={language === "ru" ? "logos:russia" : "logos:united-kingdom"}
-                    width={20}
-                    height={20}
-                  />
-                }
-              >
-                {language === "ru" ? "RU" : "EN"}
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu
-              aria-label="Language selection"
-              onAction={(key) => setLanguage(key as "ru" | "en")}
-              selectedKeys={[language]}
+          <Menu>
+            <MenuButton
+              as={Button}
+              variant="ghost"
+              className="min-w-0 px-2 font-mono"
+              leftIcon={
+                <Icon
+                  icon={language === "ru" ? "logos:russia" : "logos:united-kingdom"}
+                  width={20}
+                  height={20}
+                />
+              }
             >
-              <DropdownItem
-                key="ru"
-                startContent={<Icon icon="logos:russia" width={20} height={20} />}
-              >
-                Русский
-              </DropdownItem>
-              <DropdownItem
-                key="en"
-                startContent={<Icon icon="logos:united-kingdom" width={20} height={20} />}
-              >
-                English
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
+              {language === "ru" ? "RU" : "EN"}
+            </MenuButton>
+            <MenuList>
+              <MenuItem icon={<Icon icon="logos:russia" width={20} height={20} />} onClick={() => setLanguage("ru")}>Русский</MenuItem>
+              <MenuItem icon={<Icon icon="logos:united-kingdom" width={20} height={20} />} onClick={() => setLanguage("en")}>English</MenuItem>
+            </MenuList>
+          </Menu>
 
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
             <Button
