@@ -7,11 +7,10 @@ import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <HeroUIProvider>
-      <BrowserRouter>
-        <ToastProvider />
-        <App />
-      </BrowserRouter>
-    </HeroUIProvider>
+  <BrowserRouter>
+    <ToastProvider>
+      <App />
+    </ToastProvider>
+  </BrowserRouter>
   </React.StrictMode>,
 )
