@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from "react";
 import translations from "../locales/translations";
 
 type Language = "ru" | "en";
-type TranslationKey = keyof typeof translations.ru;
+type type TranslationKey = string;
 
 interface LanguageContextType {
   language: Language;
