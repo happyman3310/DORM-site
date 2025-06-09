@@ -194,64 +194,55 @@ const TeamPage: React.FC = () => {
       <Modal isOpen={isOpen} onOpenChange={onOpenChange} size="lg">
         <ModalContent>
           {(onClose) => (
-            <>
-              {selectedMember && (
-                <>
-                  <ModalHeader className="flex flex-col gap-1">
-                    {selectedMember.name}
-                  </ModalHeader>
-                  <ModalBody>
-                    <div className="flex flex-col md:flex-row gap-6">
-                      <img
-                        src={selectedMember.image}
-                        alt={selectedMember.name}
-                        className="w-full md:w-48 h-48 object-cover rounded-lg"
-                      />
-                      <div>
-                        <h3 className="text-xl font-semibold text-accent-orange mb-2">
-                          {selectedMember.role}
-                        </h3>
-                        <p className="mb-4">{selectedMember.bio}</p>
-                        <div className="flex gap-4">
-                          {selectedMember.telegram && (
-                            <a
-                              href={selectedMember.telegram}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-primary-blue hover:text-accent-orange transition-colors"
-                            >
-                              <Icon icon="lucide:send" width={24} height={24} />
-                            </a>
-                          )}
-                          {selectedMember.linkedin && (
-                            <a
-                              href={selectedMember.linkedin}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-primary-blue hover:text-accent-orange transition-colors"
-                            >
-                              <Icon icon="lucide:linkedin" width={24} height={24} />
-                            </a>
-                          )}
-                        </div>
+            selectedMember && (
+              <>
+                <ModalHeader className="flex flex-col gap-1">
+                  {selectedMember.name}
+                </ModalHeader>
+                <ModalBody>
+                  <div className="flex flex-col md:flex-row gap-6">
+                    <img
+                      src={selectedMember.image}
+                      alt={selectedMember.name}
+                      className="w-full md:w-48 h-48 object-cover rounded-lg"
+                    />
+                    <div>
+                      <h3 className="text-xl font-semibold text-accent-orange mb-2">
+                        {selectedMember.role}
+                      </h3>
+                      <p className="mb-4">{selectedMember.bio}</p>
+                      <div className="flex gap-4">
+                        {selectedMember.telegram && (
+                          <a
+                            href={selectedMember.telegram}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary-blue hover:text-accent-orange transition-colors"
+                          >
+                            <Icon icon="lucide:send" width={24} height={24} />
+                          </a>
+                        )}
+                        {selectedMember.linkedin && (
+                          <a
+                            href={selectedMember.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary-blue hover:text-accent-orange transition-colors"
+                          >
+                            <Icon icon="lucide:linkedin" width={24} height={24} />
+                          </a>
+                        )}
                       </div>
                     </div>
+
                   </ModalBody>
                   <ModalFooter>
-                    // ... внутри ModalContent
-{(onClose) => (
-  <>
-    <ModalHeader>{selectedMember?.name}</ModalHeader>
-    <ModalBody>…</ModalBody>
-    <ModalFooter>
-      <Button onPress={onClose}>{t("team.modal.close")}</Button>
-    </ModalFooter>
-  </>
-)}
+                    <Button onPress={onClose}>{t("team.modal.close")}</Button>
                   </ModalFooter>
                 </>
               )}
             </>
+
           )}
         </ModalContent>
       </Modal>
