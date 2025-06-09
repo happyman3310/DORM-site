@@ -234,8 +234,9 @@ const TeamPage: React.FC = () => {
                         )}
                       </div>
                     </div>
+                  </div>
 
-                  </ModalBody>
+                </ModalBody>
               <ModalFooter>
                 <Button onClick={onClose}>{t("team.modal.close")}</Button>
               </ModalFooter>
