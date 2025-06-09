@@ -7,10 +7,9 @@ import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-  <BrowserRouter>
-    <ToastProvider>
+    <BrowserRouter>
       <App />
-    </ToastProvider>
-  </BrowserRouter>
+      <ToastProvider />
+    </BrowserRouter>
   </React.StrictMode>,
 )
