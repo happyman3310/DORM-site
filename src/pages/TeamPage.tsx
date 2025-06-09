@@ -234,13 +234,15 @@ const TeamPage: React.FC = () => {
                         )}
                       </div>
                     </div>
-                  </div>
-                </ModalBody>
-                <ModalFooter>
-                  <Button onPress={onClose}>{t("team.modal.close")}</Button>
-                </ModalFooter>
-              </>
-            )
+
+                  </ModalBody>
+                  <ModalFooter>
+                    <Button onPress={onClose}>{t("team.modal.close")}</Button>
+                  </ModalFooter>
+                </>
+              )}
+            </>
+
           )}
         </ModalContent>
       </Modal>

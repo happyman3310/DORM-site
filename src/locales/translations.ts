@@ -65,6 +65,7 @@ const translations = {
     "team.role.cto": "Технический директор",
     "team.role.designer": "Главный дизайнер",
     "team.role.marketing": "Директор по маркетингу",
+    "team.modal.close": "Закрыть",
     
     // Footer
     "footer.about": "DORM Community — платформа для развития талантов и реализации амбициозных проектов. Мы объединяем людей, идеи и ресурсы для создания инновационных решений.",
@@ -148,6 +149,7 @@ const translations = {
     "team.role.cto": "CTO",
     "team.role.designer": "Lead Designer",
     "team.role.marketing": "Marketing Director",
+    "team.modal.close": "Close",
     
     // Footer
     "footer.about": "DORM Community is a platform for talent development and implementation of ambitious projects. We bring together people, ideas, and resources to create innovative solutions.",
