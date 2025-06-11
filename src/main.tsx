@@ -1,23 +1,28 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import { ChakraProvider, extendTheme } from "@chakra-ui/react"
-import { ThemeProvider } from '@emotion/react'
-import App from './App.tsx'
-import './index.css'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
+import App from './App.tsx';
+import './index.css';
 
+// Здесь вы можете расширять тему Chakra UI
 const theme = extendTheme({
-  // ваши настройки темы
-})
+  styles: {
+    global: {
+      body: {
+        bg: '#202020',
+        color: '#F5F5F5',
+      },
+    },
+  },
+});
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <ThemeProvider theme={theme}>
-        <ChakraProvider theme={theme}>
-          <App />
-        </ChakraProvider>
-      </ThemeProvider>
+      <ChakraProvider theme={theme}>
+        <App />
+      </ChakraProvider>
     </BrowserRouter>
   </React.StrictMode>,
-)
+);
