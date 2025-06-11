@@ -34,16 +34,11 @@ const ProductSection: React.FC = () => {
     setTimeout(() => {
       console.log("Form submitted:", formData);
       setIsSubmitting(false);
-      setFormData({
-        name: "",
-        birthYear: "",
-        email: "",
-        about: "",
-        consent: false,
-      });
+      setFormData({ name: "", birthYear: "", email: "", about: "", consent: false });
 
       toast({
         title: t("product.toast.success"),
+        // Корректно передаем переменную в функцию перевода
         description: t("product.toast.description", { email: formData.email }),
         status: "success",
         duration: 5000,
@@ -63,20 +58,13 @@ const ProductSection: React.FC = () => {
   return (
     <section id="product" className="py-40 bg-gradient-to-b from-background to-primary-blue">
       <div className="container mx-auto max-w-container px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Left side - Mockups */}
-          <div className="flex flex-col items-center lg:items-start space-y-8">
-            {/* Mockups... без изменений */}
-          </div>
-
-          {/* Right side - Beta form */}
-          <motion.div
+        <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
             className="max-w-sm mx-auto lg:mx-0"
-          >
+        >
             <h2 className="font-poppins font-black text-3xl md:text-4xl text-accent-orange mb-8">
               {t("product.title")}
             </h2>
@@ -90,7 +78,6 @@ const ProductSection: React.FC = () => {
                 bg="surface-gray"
                 border="none"
               />
-
               <Select
                 placeholder={t("product.birthYearPlaceholder")}
                 value={formData.birthYear}
@@ -103,7 +90,6 @@ const ProductSection: React.FC = () => {
                   <option key={year} value={year}>{year}</option>
                 ))}
               </Select>
-
               <Input
                 type="email"
                 placeholder={t("product.emailPlaceholder")}
@@ -113,7 +99,6 @@ const ProductSection: React.FC = () => {
                 bg="surface-gray"
                 border="none"
               />
-
               <Textarea
                 placeholder={t("product.aboutPlaceholder")}
                 value={formData.about}
@@ -123,7 +108,6 @@ const ProductSection: React.FC = () => {
                 border="none"
                 rows={3}
               />
-
               <Checkbox
                 isChecked={formData.consent}
                 onChange={(e) => handleChange("consent", e.target.checked)}
@@ -131,7 +115,6 @@ const ProductSection: React.FC = () => {
               >
                 {t("product.consent")}
               </Checkbox>
-
               <Button
                 type="submit"
                 bg="accent-orange"
@@ -145,7 +128,6 @@ const ProductSection: React.FC = () => {
               </Button>
             </form>
           </motion.div>
-        </div>
       </div>
     </section>
   );
