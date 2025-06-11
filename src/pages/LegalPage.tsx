@@ -7,7 +7,6 @@ import { useLanguage } from "../context/LanguageContext";
 const LegalPage: React.FC = () => {
   const { t } = useLanguage();
 
-  // Теперь контент полностью управляется через локализацию
   const termsContent = t("legal.terms.content");
   const privacyContent = t("legal.privacy.content");
 
