@@ -1,25 +1,27 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { FC } from 'react';
-import Home from './pages/Home';
-import Mission from './pages/Mission';
-import Product from './pages/Product';
-import Team from './pages/Team';
-import Navigation from './components/Navigation';
+import HomePage from './pages/HomePage';
+import MissionPage from './pages/MissionPage'; // Создайте этот файл
+import ProductPage from './pages/ProductPage';
+import TeamPage from './pages/TeamPage';
+import LegalPage from './pages/LegalPage';
+import Header from './components/Header'; // Убедитесь, что этот компонент существует
 import Footer from './components/Footer';
 
 const App: FC = () => {
   return (
-    <Router>
-      <Navigation />
+    <>
+      <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/mission" element={<Mission />} />
-        <Route path="/product" element={<Product />} />
-        <Route path="/team" element={<Team />} />
-        <Route path="*" element={<Home />} />
+        <Route path="/" element={<HomePage />} />
+         <Route path="/mission" element={<MissionPage />} /> 
+        <Route path="/product" element={<ProductPage />} />
+        <Route path="/team" element={<TeamPage />} />
+        <Route path="/legal" element={<LegalPage />} />
+        <Route path="*" element={<HomePage />} /> {/* Или страница 404 */}
       </Routes>
       <Footer />
-    </Router>
+    </>
   );
 };
 
