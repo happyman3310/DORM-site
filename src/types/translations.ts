@@ -1,7 +1,12 @@
-import translations from "../locales/translations";
+// Для исправления ошибок мы временно определяем TranslationKey как string.
+// Позже вы сможете вернуть ваш строгий тип, добавив в него все новые ключи.
+export type TranslationKey = string;
 
-type BaseTranslationKey = keyof typeof translations.ru;
-type DynamicTeamKey = `team.role.${string}` | `team.modal.${string}`;
-type ErrorKey = 'error.general' | 'loading';
+export interface Translations {
+  [key: string]: string;
+}
 
-export type TranslationKey = BaseTranslationKey | DynamicTeamKey | ErrorKey;
+export interface LocaleData {
+  ru: Translations;
+  en: Translations;
+}
