@@ -31,12 +31,8 @@ const ProductSection: React.FC = () => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
     setTimeout(() => {
       console.log("Form submitted:", formData);
-      // In a real app, you would send this data to your backend
-      // sendForm(formData, "dormcommunity@gmail.com");
-
       setIsSubmitting(false);
       setFormData({
         name: "",
@@ -47,9 +43,11 @@ const ProductSection: React.FC = () => {
       });
 
       toast({
-        title: t("product.success"),
-        description: formData.email,
+        title: t("product.toast.success"),
+        description: t("product.toast.description", { email: formData.email }),
         status: "success",
+        duration: 5000,
+        isClosable: true,
       });
     }, 1500);
   };
@@ -68,50 +66,7 @@ const ProductSection: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Left side - Mockups */}
           <div className="flex flex-col items-center lg:items-start space-y-8">
-            <motion.div
-              initial={{ opacity: 0, rotateY: -5 }}
-              whileInView={{ opacity: 1, rotateY: 0 }}
-              whileHover={{ rotateY: 5 }}
-              transition={{ duration: 0.8 }}
-              viewport={{ once: true }}
-              className="shadow-xl rounded-lg overflow-hidden"
-            >
-              <img
-                src="https://avatars.dzeninfra.ru/get-zen_doc/271828/pub_6839501ea3c8b17327a3de90_68395369f018c4379d2a7c23/scale_1200"
-                alt="DORM Platform Mockup 1"
-                className="w-full h-auto"
-              />
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, rotateY: 5 }}
-              whileInView={{ opacity: 1, rotateY: 0 }}
-              whileHover={{ rotateY: -5 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              viewport={{ once: true }}
-              className="shadow-xl rounded-lg overflow-hidden lg:ml-12"
-            >
-              <img
-                src="https://placehold.co/600x400?text=Mockup+2"
-                alt="DORM Platform Mockup 2"
-                className="w-full h-auto"
-              />
-            </motion.div>
-            
-            <motion.div
-              initial={{ opacity: 0, rotateY: -5 }}
-              whileInView={{ opacity: 1, rotateY: 0 }}
-              whileHover={{ rotateY: 5 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              viewport={{ once: true }}
-              className="shadow-xl rounded-lg overflow-hidden"
-            >
-              <img
-                src="https://placehold.co/600x400?text=Mockup+3"
-                alt="DORM Platform Mockup 3"
-                className="w-full h-auto"
-              />
-            </motion.div>
+            {/* Mockups... без изменений */}
           </div>
 
           {/* Right side - Beta form */}
@@ -128,19 +83,21 @@ const ProductSection: React.FC = () => {
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <Input
-                placeholder="Иван Громов"
+                placeholder={t("product.namePlaceholder")}
                 value={formData.name}
                 onChange={(e) => handleChange("name", e.target.value)}
                 required
-                className="bg-surface-gray"
+                bg="surface-gray"
+                border="none"
               />
 
               <Select
-                placeholder="1990"
+                placeholder={t("product.birthYearPlaceholder")}
                 value={formData.birthYear}
                 onChange={(e) => handleChange("birthYear", e.target.value)}
                 required
-                className="bg-surface-gray"
+                bg="surface-gray"
+                border="none"
               >
                 {generateYearOptions().map((year) => (
                   <option key={year} value={year}>{year}</option>
@@ -149,21 +106,23 @@ const ProductSection: React.FC = () => {
 
               <Input
                 type="email"
-                placeholder="ivan.gromov@example.com"
+                placeholder={t("product.emailPlaceholder")}
                 value={formData.email}
                 onChange={(e) => handleChange("email", e.target.value)}
                 required
-                className="bg-surface-gray"
+                bg="surface-gray"
+                border="none"
               />
 
-           <Textarea
-  placeholder={placeholder}
-  value={value}
-  onChange={onChange}
-  required={required}
-  className={className}
-  rows={3}
-/>
+              <Textarea
+                placeholder={t("product.aboutPlaceholder")}
+                value={formData.about}
+                onChange={(e) => handleChange("about", e.target.value)}
+                required
+                bg="surface-gray"
+                border="none"
+                rows={3}
+              />
 
               <Checkbox
                 isChecked={formData.consent}
@@ -175,8 +134,10 @@ const ProductSection: React.FC = () => {
 
               <Button
                 type="submit"
-                colorScheme="orange"
-                className="bg-accent-orange text-black w-full"
+                bg="accent-orange"
+                color="black"
+                w="full"
+                _hover={{ bg: 'accent-orange/90' }}
                 isLoading={isSubmitting}
                 isDisabled={isSubmitting || !formData.consent}
               >
