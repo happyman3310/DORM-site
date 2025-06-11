@@ -24,7 +24,6 @@ class ErrorBoundary extends Component<Props, State> {
 
   public render() {
     if (this.state.hasError) {
-      // Здесь можно вставить более красивый компонент для отображения ошибки
       return <h1>Something went wrong.</h1>;
     }
 
@@ -33,7 +32,7 @@ class ErrorBoundary extends Component<Props, State> {
 }
 
 export const PageErrorBoundary: React.FC<Props> = ({ children }) => {
-  // Переменная 't' была удалена, так как она не использовалась
+  // `useLanguage` и `t` были убраны, так как они не использовались здесь
   return (
     <React.Suspense fallback={<div>Loading...</div>}>
       <ErrorBoundary>
