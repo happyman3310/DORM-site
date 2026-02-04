@@ -1,6 +1,7 @@
 import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
+import { directions } from '../data/mockData';
 
 const DirectionsPage = () => {
   return (
@@ -25,26 +26,7 @@ const DirectionsPage = () => {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        {[
-          {
-            title: 'Поступление в магистратуру',
-            period: '1 месяц',
-            status: 'Ожидает проверки',
-            criteria: ['Интерес 8', 'Энергия 6', 'Реальность 7'],
-          },
-          {
-            title: 'Запуск проекта',
-            period: '2 недели',
-            status: 'В процессе',
-            criteria: ['Интерес 9', 'Энергия 7', 'Сложность 6'],
-          },
-          {
-            title: 'Изучение дизайна',
-            period: '3 месяца',
-            status: 'В процессе',
-            criteria: ['Интерес 7', 'Реальность 5', 'Энергия 6'],
-          },
-        ].map((direction) => (
+        {directions.map((direction) => (
           <GlassCard key={direction.title} className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold text-app">{direction.title}</h2>

@@ -2,17 +2,29 @@ import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
 import { interpretationThresholds } from '../config/wayn';
-import { lifeAreas } from '../data/lifeAreas';
+import { checkpoints as checkpointHistory, directions, getLatestCheckpoint, getPreviousCheckpoint } from '../data/mockData';
+import { calculateDynamics, calculateGap, findLowZones } from '../utils/interpretation';
+
+const currentCheckpoint = getLatestCheckpoint();
+const previousCheckpoint = getPreviousCheckpoint();
+const gapValue = calculateGap(currentCheckpoint);
+const lowZones = findLowZones(currentCheckpoint);
+const dynamics = calculateDynamics(currentCheckpoint, previousCheckpoint);
 
 const metrics = [
-  { label: 'Сильные зоны', value: 'Навыки, Энергия' },
-  { label: 'Слабые зоны', value: 'Деньги, Смысл' },
-  { label: 'Перекос', value: 'Разрыв 4.5' },
-];
-
-const directions = [
-  { title: 'Поступление в магистратуру', period: '1 месяц', status: 'Ожидает проверки', criteria: 'Интерес 8 • Реальность 7' },
-  { title: 'Смена специализации', period: '2 недели', status: 'В процессе', criteria: 'Энергия 6 • Реальность 5' },
+  {
+    label: 'Сильные зоны',
+    value: currentCheckpoint.areas
+      .filter((area) => area.score >= 7)
+      .map((area) => area.label.split('/')[0].trim())
+      .slice(0, 2)
+      .join(', '),
+  },
+  {
+    label: 'Слабые зоны',
+    value: lowZones.map((area) => area.label.split('/')[0].trim()).join(', ') || 'Нет',
+  },
+  { label: 'Перекос', value: `Разрыв ${gapValue}` },
 ];
 
 const agenda = [
@@ -22,16 +34,24 @@ const agenda = [
 ];
 
 const signals = [
-  { label: `Разрыв зон > ${interpretationThresholds.gapHighlight}`, value: '4.5', tone: 'text-accent' },
-  { label: `Зона ниже ${interpretationThresholds.lowZoneWarning}`, value: 'Деньги', tone: 'text-rose-300' },
-  { label: `Рост недели > ${interpretationThresholds.dynamicsDelta}`, value: '+1.2', tone: 'text-emerald-300' },
+  {
+    label: `Разрыв зон > ${interpretationThresholds.gapHighlight}`,
+    value: gapValue.toString(),
+    tone: 'text-accent',
+  },
+  {
+    label: `Зона ниже ${interpretationThresholds.lowZoneWarning}`,
+    value: lowZones[0]?.label.split('/')[0].trim() ?? 'Нет',
+    tone: 'text-rose-300',
+  },
+  {
+    label: `Рост недели > ${interpretationThresholds.dynamicsDelta}`,
+    value: `${dynamics.delta > 0 ? '+' : ''}${dynamics.delta}`,
+    tone: 'text-emerald-300',
+  },
 ];
 
-const checkpoints = [
-  { date: '12 сент', note: 'Сильный фокус на навыках', score: 7.4 },
-  { date: '05 сент', note: 'Энергия на минимуме', score: 5.8 },
-  { date: '29 авг', note: 'Стабильный баланс', score: 6.9 },
-];
+const checkpoints = checkpointHistory;
 
 const DashboardPage = () => {
   return (
@@ -107,19 +127,19 @@ const DashboardPage = () => {
             </button>
           </div>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {lifeAreas.map((area, index) => (
-              <div key={area.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            {currentCheckpoint.areas.map((area) => (
+              <div key={area.key} className="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-app">{area.label}</p>
-                  <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-muted">{6 + (index % 4)}</span>
+                  <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-muted">{area.score}</span>
                 </div>
                 <div className="mt-3 h-1.5 rounded-full bg-white/5">
                   <div
                     className="h-1.5 rounded-full bg-gradient-to-r from-accent to-accent-strong"
-                    style={{ width: `${60 + (index % 4) * 8}%` }}
+                    style={{ width: `${area.score * 10}%` }}
                   />
                 </div>
-                <p className="mt-3 text-xs text-muted">Комментарий: стабильная неделя</p>
+                <p className="mt-3 text-xs text-muted">{area.comment}</p>
               </div>
             ))}
           </div>
@@ -146,10 +166,10 @@ const DashboardPage = () => {
                     </span>
                   </div>
                   <p className="mt-2 text-xs text-muted">{direction.status}</p>
-                  <p className="mt-2 text-xs text-muted">{direction.criteria}</p>
+                  <p className="mt-2 text-xs text-muted">{direction.criteria.join(' • ')}</p>
                   <div className="mt-4 flex items-center gap-2 text-xs text-muted">
                     <Icon icon="solar:clock-circle-bold-duotone" width={16} />
-                    Следующая проверка через 6 дней
+                    Следующая проверка через {direction.nextReviewInDays} дней
                   </div>
                 </div>
               ))}
@@ -213,12 +233,14 @@ const DashboardPage = () => {
           </div>
           <div className="mt-6 space-y-3">
             {checkpoints.map((checkpoint) => (
-              <div key={checkpoint.date} className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+              <div key={checkpoint.id} className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                 <div>
                   <p className="text-sm text-app">{checkpoint.date}</p>
                   <p className="mt-1 text-xs text-muted">{checkpoint.note}</p>
                 </div>
-                <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-muted">{checkpoint.score}</span>
+                <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-muted">
+                  {checkpoint.averageScore}
+                </span>
               </div>
             ))}
           </div>

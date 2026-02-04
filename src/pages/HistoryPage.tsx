@@ -1,7 +1,9 @@
 import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
-import { lifeAreas } from '../data/lifeAreas';
+import { checkpoints } from '../data/mockData';
+
+const latestCheckpoint = checkpoints[0];
 
 const HistoryPage = () => {
   return (
@@ -44,8 +46,8 @@ const HistoryPage = () => {
         <GlassCard>
           <p className="text-xs uppercase tracking-[0.2em] text-muted">Последние изменения</p>
           <div className="mt-6 space-y-4">
-            {lifeAreas.map((area, index) => (
-              <div key={area.id} className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
+            {latestCheckpoint.areas.map((area, index) => (
+              <div key={area.key} className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                 <p className="text-sm text-app">{area.label}</p>
                 <span className={`text-xs ${index % 2 === 0 ? 'text-accent' : 'text-app opacity-70'}`}>
                   {index % 2 === 0 ? '+1.2' : '-0.6'}
@@ -67,15 +69,11 @@ const HistoryPage = () => {
           </Link>
         </div>
         <div className="mt-6 space-y-4">
-          {[
-            { date: '12 сентября', note: 'Фокус на навыках, энергия ниже нормы.', score: '6.9' },
-            { date: '05 сентября', note: 'Сильный перекос между деньгами и смыслом.', score: '5.8' },
-            { date: '29 августа', note: 'Стабильная неделя, рост интереса.', score: '6.6' },
-          ].map((item) => (
-            <div key={item.date} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+          {checkpoints.map((item) => (
+            <div key={item.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
               <div className="flex items-center justify-between">
                 <p className="text-sm text-app">{item.date}</p>
-                <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-muted">{item.score}</span>
+                <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-muted">{item.averageScore}</span>
               </div>
               <p className="mt-2 text-sm text-muted">{item.note}</p>
             </div>
