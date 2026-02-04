@@ -1,8 +1,23 @@
-# React + Tailwind
+# WAYN (Where Are You Now) — MVP Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules. One top of the standard Vite setup, [tailwindcss](https://tailwindcss.com/) is installed and ready to be used in React components.
+Минималистичное mobile-first веб-приложение для навигации по жизненным состояниям: фиксация точки, интерпретация, выбор направления и проверка выбора. В MVP нет ИИ, рекомендаций или сложной аналитики.
 
-Additional references:
+## Быстрый старт
 
-- [Getting started with Vite](https://vitejs.dev/guide/)
-- [Tailwind documentation](https://tailwindcss.com/docs/installation)
+```bash
+npm install
+npm run dev
+```
+
+После запуска Vite покажет локальный адрес (обычно `http://localhost:5173/`).
+
+## Основные маршруты MVP
+
+- `/` — Dashboard (Where Are You Now)
+- `/auth` — Авторизация
+- `/checkpoint` — Фиксация текущей точки
+- `/directions` — Выборы
+- `/directions/new` — Новый выбор
+- `/directions/review` — Проверка выбора
+- `/history` — История и динамика
+- `/pricing` — Тарифы (заглушка)

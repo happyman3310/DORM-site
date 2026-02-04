@@ -10,8 +10,8 @@ const theme = extendTheme({
   styles: {
     global: {
       body: {
-        bg: '#202020',
-        color: '#F5F5F5',
+        bg: 'var(--app-bg)',
+        color: 'var(--app-text)',
       },
     },
   },
