@@ -1,27 +1,29 @@
 import { Routes, Route } from 'react-router-dom';
 import { FC } from 'react';
-import HomePage from './pages/HomePage';
-import MissionPage from './pages/MissionPage'; // Создайте этот файл
-import ProductPage from './pages/ProductPage';
-import TeamPage from './pages/TeamPage';
-import LegalPage from './pages/LegalPage';
-import Header from './components/Header'; // Убедитесь, что этот компонент существует
-import Footer from './components/Footer';
+import AppShell from './components/AppShell';
+import AuthPage from './pages/AuthPage';
+import CheckpointPage from './pages/CheckpointPage';
+import DashboardPage from './pages/DashboardPage';
+import DirectionCreatePage from './pages/DirectionCreatePage';
+import DirectionReviewPage from './pages/DirectionReviewPage';
+import DirectionsPage from './pages/DirectionsPage';
+import HistoryPage from './pages/HistoryPage';
+import PricingPage from './pages/PricingPage';
 
 const App: FC = () => {
   return (
-    <>
-      <Header />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-         <Route path="/mission" element={<MissionPage />} /> 
-        <Route path="/product" element={<ProductPage />} />
-        <Route path="/team" element={<TeamPage />} />
-        <Route path="/legal" element={<LegalPage />} />
-        <Route path="*" element={<HomePage />} /> {/* Или страница 404 */}
-      </Routes>
-      <Footer />
-    </>
+    <Routes>
+      <Route path="/auth" element={<AuthPage />} />
+      <Route element={<AppShell />}>
+        <Route path="/" element={<DashboardPage />} />
+        <Route path="/checkpoint" element={<CheckpointPage />} />
+        <Route path="/directions" element={<DirectionsPage />} />
+        <Route path="/directions/new" element={<DirectionCreatePage />} />
+        <Route path="/directions/review" element={<DirectionReviewPage />} />
+        <Route path="/history" element={<HistoryPage />} />
+        <Route path="/pricing" element={<PricingPage />} />
+      </Route>
+    </Routes>
   );
 };
 
