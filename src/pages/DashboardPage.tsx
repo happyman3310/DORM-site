@@ -1,6 +1,7 @@
 import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
+import { interpretationThresholds } from '../config/wayn';
 import { lifeAreas } from '../data/lifeAreas';
 
 const metrics = [
@@ -21,9 +22,9 @@ const agenda = [
 ];
 
 const signals = [
-  { label: 'Разрыв зон', value: '4.5', tone: 'text-accent' },
-  { label: 'Зона ниже 4', value: 'Деньги', tone: 'text-rose-300' },
-  { label: 'Рост недели', value: '+1.2', tone: 'text-emerald-300' },
+  { label: `Разрыв зон > ${interpretationThresholds.gapHighlight}`, value: '4.5', tone: 'text-accent' },
+  { label: `Зона ниже ${interpretationThresholds.lowZoneWarning}`, value: 'Деньги', tone: 'text-rose-300' },
+  { label: `Рост недели > ${interpretationThresholds.dynamicsDelta}`, value: '+1.2', tone: 'text-emerald-300' },
 ];
 
 const checkpoints = [
@@ -87,9 +88,9 @@ const DashboardPage = () => {
             </div>
           </div>
           <div className="space-y-2 text-sm text-muted">
-            <p>Разрыв зон &gt; 3 → подсветка.</p>
-            <p>Зона &lt; 4 → предупреждение.</p>
-            <p>Рост/падение &gt; 1 → динамика.</p>
+            <p>Разрыв зон &gt; {interpretationThresholds.gapHighlight} → подсветка.</p>
+            <p>Зона &lt; {interpretationThresholds.lowZoneWarning} → предупреждение.</p>
+            <p>Рост/падение &gt; {interpretationThresholds.dynamicsDelta} → динамика.</p>
           </div>
         </GlassCard>
       </section>

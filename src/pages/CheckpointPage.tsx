@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
+import { interpretationThresholds } from '../config/wayn';
 import { lifeAreas } from '../data/lifeAreas';
 
 const CheckpointPage = () => {
@@ -52,13 +53,13 @@ const CheckpointPage = () => {
             <p className="text-xs uppercase tracking-[0.2em] text-muted">Правила интерпретации</p>
             <div className="mt-4 space-y-3 text-sm text-muted">
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                Разрыв между зонами &gt; 3 — подсвечиваем перекос.
+                Разрыв между зонами &gt; {interpretationThresholds.gapHighlight} — подсвечиваем перекос.
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                Зона &lt; 4 — предупреждение и напоминание.
+                Зона &lt; {interpretationThresholds.lowZoneWarning} — предупреждение и напоминание.
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                Рост/падение &gt; 1 — считаем динамикой.
+                Рост/падение &gt; {interpretationThresholds.dynamicsDelta} — считаем динамикой.
               </div>
             </div>
           </GlassCard>
