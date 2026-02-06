@@ -2,8 +2,24 @@ import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
 import { lifeAreas } from '../data/lifeAreas';
+import { formatDate, useAppData } from '../data/appData';
 
 const HistoryPage = () => {
+  const { state } = useAppData();
+  const [current, previous] = state.checkpoints;
+
+  const changes = lifeAreas.map((area) => {
+    const currentScore = current?.areas[area.id]?.score ?? null;
+    const previousScore = previous?.areas[area.id]?.score ?? null;
+    const diff = currentScore !== null && previousScore !== null ? currentScore - previousScore : null;
+    return {
+      id: area.id,
+      label: area.label,
+      currentScore,
+      diff,
+    };
+  });
+
   return (
     <div className="space-y-8">
       <header className="flex flex-wrap items-center justify-between gap-4">
@@ -26,22 +42,48 @@ const HistoryPage = () => {
             </div>
             <Icon icon="solar:chart-2-bold-duotone" width={24} />
           </div>
-          <div className="mt-6 rounded-3xl border border-dashed border-white/10 bg-gradient-to-br from-white/5 via-transparent to-white/10 p-6">
-            <div className="flex h-48 items-center justify-center text-center text-sm text-muted">
-              Здесь будет линейный график по зонам
+          {state.checkpoints.length === 0 ? (
+            <div className="mt-6 rounded-3xl border border-dashed border-white/10 bg-gradient-to-br from-white/5 via-transparent to-white/10 p-6">
+              <div className="flex h-48 items-center justify-center text-center text-sm text-muted">
+                Добавьте первый чекпоинт, чтобы видеть динамику.
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="mt-6 space-y-4">
+              {state.checkpoints.slice(0, 3).map((checkpoint) => (
+                <div key={checkpoint.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-app">Чекпоинт {formatDate(checkpoint.createdAt)}</p>
+                    <span className="text-xs text-muted">{Object.keys(checkpoint.areas).length} зон</span>
+                  </div>
+                  <div className="mt-3 grid gap-2 text-xs text-muted">
+                    {lifeAreas.map((area) => (
+                      <div key={area.id} className="flex items-center justify-between">
+                        <span>{area.label}</span>
+                        <span className="rounded-full bg-white/10 px-2 py-1">{checkpoint.areas[area.id]?.score ?? 0}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </GlassCard>
 
         <GlassCard>
           <p className="text-xs uppercase tracking-[0.2em] text-muted">Последние изменения</p>
           <div className="mt-6 space-y-4">
-            {lifeAreas.map((area, index) => (
+            {changes.map((area) => (
               <div key={area.id} className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
                 <p className="text-sm text-app">{area.label}</p>
-                <span className={`text-xs ${index % 2 === 0 ? 'text-accent' : 'text-app opacity-70'}`}>
-                  {index % 2 === 0 ? '+1.2' : '-0.6'}
-                </span>
+                {area.diff === null ? (
+                  <span className="text-xs text-muted">нет данных</span>
+                ) : (
+                  <span className={`text-xs ${area.diff >= 0 ? 'text-accent' : 'text-rose-300'}`}>
+                    {area.diff >= 0 ? '+' : ''}
+                    {area.diff.toFixed(1)}
+                  </span>
+                )}
               </div>
             ))}
           </div>
