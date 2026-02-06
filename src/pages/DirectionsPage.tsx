@@ -1,8 +1,24 @@
 import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
+import { formatDate, useAppData } from '../data/appData';
 
 const DirectionsPage = () => {
+  const { state } = useAppData();
+
+  if (!state.user) {
+    return (
+      <GlassCard>
+        <div className="space-y-3 text-sm text-muted">
+          <p>Войдите, чтобы управлять направлениями.</p>
+          <Link to="/auth" className="inline-flex rounded-full bg-accent px-5 py-2 text-xs font-semibold text-white shadow-glow">
+            Перейти к авторизации
+          </Link>
+        </div>
+      </GlassCard>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <header className="flex flex-wrap items-center justify-between gap-4">
@@ -16,33 +32,44 @@ const DirectionsPage = () => {
         </Link>
       </header>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        {['Поступление в магистратуру', 'Запуск проекта', 'Изучение дизайна'].map((title) => (
-          <GlassCard key={title} className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-app">{title}</h2>
-              <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-muted">1 месяц</span>
-            </div>
-            <p className="text-sm text-muted">
-              Ожидаемый результат: чёткое понимание, подходит ли направление в долгую.
-            </p>
-            <div className="flex flex-wrap gap-3 text-xs text-muted">
-              <span className="rounded-full border border-white/15 px-3 py-1">Интерес 8</span>
-              <span className="rounded-full border border-white/15 px-3 py-1">Энергия 6</span>
-              <span className="rounded-full border border-white/15 px-3 py-1">Реальность 7</span>
-            </div>
-            <div className="flex items-center justify-between text-xs text-muted">
-              <span className="flex items-center gap-2">
-                <Icon icon="solar:clock-circle-bold-duotone" width={16} />
-                Проверка через 12 дней
-              </span>
-              <Link to="/directions/review" className="rounded-full border border-white/15 px-4 py-2 text-xs text-app">
-                Проверить
-              </Link>
-            </div>
-          </GlassCard>
-        ))}
-      </div>
+      {state.directions.length === 0 ? (
+        <GlassCard>
+          <div className="space-y-3 text-sm text-muted">
+            <p>Пока нет созданных направлений.</p>
+            <Link to="/directions/new" className="inline-flex rounded-full bg-accent px-5 py-2 text-xs font-semibold text-white shadow-glow">
+              Создать первый выбор
+            </Link>
+          </div>
+        </GlassCard>
+      ) : (
+        <div className="grid gap-6 lg:grid-cols-2">
+          {state.directions.map((direction) => (
+            <GlassCard key={direction.id} className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-app">{direction.title}</h2>
+                <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-muted">{direction.period}</span>
+              </div>
+              <p className="text-sm text-muted">{direction.expectedOutcome}</p>
+              <div className="flex flex-wrap gap-3 text-xs text-muted">
+                {Object.entries(direction.criteria).slice(0, 3).map(([criterion, values]) => (
+                  <span key={criterion} className="rounded-full border border-white/15 px-3 py-1">
+                    {criterion} {values.expected}
+                  </span>
+                ))}
+              </div>
+              <div className="flex items-center justify-between text-xs text-muted">
+                <span className="flex items-center gap-2">
+                  <Icon icon="solar:clock-circle-bold-duotone" width={16} />
+                  Проверка {formatDate(direction.reviewAt)}
+                </span>
+                <Link to={`/directions/review/${direction.id}`} className="rounded-full border border-white/15 px-4 py-2 text-xs text-app">
+                  Проверить
+                </Link>
+              </div>
+            </GlassCard>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

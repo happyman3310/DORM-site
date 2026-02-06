@@ -11,6 +11,14 @@ npm run dev
 
 После запуска Vite покажет локальный адрес (обычно `http://localhost:5173/`).
 
+## Backend (локальный API)
+
+```bash
+npm run server
+```
+
+API поднимается на `http://localhost:5050` и проксируется из Vite через `/api`.
+
 ## Основные маршруты MVP
 
 - `/` — Dashboard (Where Are You Now)
