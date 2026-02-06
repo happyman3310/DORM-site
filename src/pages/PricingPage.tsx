@@ -1,7 +1,9 @@
-import { Link } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
+import { useAppData } from '../data/appData';
 
 const PricingPage = () => {
+  const { state, setPlan } = useAppData();
+
   return (
     <div className="space-y-8">
       <header className="space-y-2">
@@ -20,9 +22,19 @@ const PricingPage = () => {
             <li>• История за 30 дней</li>
             <li>• Базовая интерпретация</li>
           </ul>
-          <Link to="/auth" className="rounded-full border border-white/15 px-6 py-2 text-sm text-app">
-            Текущий план
-          </Link>
+          {state.plan === 'Free' ? (
+            <span className="inline-flex rounded-full border border-white/15 px-6 py-2 text-sm text-app">
+              Текущий план
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setPlan('Free')}
+              className="rounded-full border border-white/15 px-6 py-2 text-sm text-app"
+            >
+              Выбрать Free
+            </button>
+          )}
         </GlassCard>
 
         <GlassCard className="space-y-4 border border-accent/40">
@@ -34,9 +46,19 @@ const PricingPage = () => {
             <li>• История за 12 месяцев</li>
             <li>• Сравнение сценариев</li>
           </ul>
-          <Link to="/auth" className="rounded-full bg-accent px-6 py-2 text-sm font-semibold text-white shadow-glow">
-            Ожидается
-          </Link>
+          {state.plan === 'Pro' ? (
+            <span className="inline-flex rounded-full bg-accent px-6 py-2 text-sm font-semibold text-white shadow-glow">
+              Текущий план
+            </span>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setPlan('Pro')}
+              className="rounded-full bg-accent px-6 py-2 text-sm font-semibold text-white shadow-glow"
+            >
+              Активировать Pro
+            </button>
+          )}
         </GlassCard>
       </div>
     </div>

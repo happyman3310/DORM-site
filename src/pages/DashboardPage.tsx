@@ -2,25 +2,22 @@ import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
 import GlassCard from '../components/GlassCard';
 import { lifeAreas } from '../data/lifeAreas';
-
-const metrics = [
-  { label: 'Сильные зоны', value: 'Навыки, Энергия' },
-  { label: 'Слабые зоны', value: 'Деньги, Смысл' },
-  { label: 'Перекос', value: 'Разрыв 4.5' },
-];
-
-const directions = [
-  { title: 'Поступление в магистратуру', period: '1 месяц', status: 'Ожидает проверки' },
-  { title: 'Смена специализации', period: '2 недели', status: 'В процессе' },
-];
-
-const agenda = [
-  { time: '09:00', title: 'Проверить чекпоинт', tag: 'Сегодня' },
-  { time: '12:30', title: 'Встретиться с ментором', tag: 'Среда' },
-  { time: '18:00', title: 'Обзор направлений', tag: 'Пятница' },
-];
+import { calculateAreaSummary, formatAreaLabels, formatDate, useAppData } from '../data/appData';
 
 const DashboardPage = () => {
+  const { state } = useAppData();
+  const latestCheckpoint = state.checkpoints[0] ?? null;
+  const summary = calculateAreaSummary(latestCheckpoint);
+  const strongLabels = summary ? formatAreaLabels(summary.strong) : 'Нет данных';
+  const weakLabels = summary ? formatAreaLabels(summary.weak) : 'Нет данных';
+  const balanceGap = summary
+    ? Math.max(
+        ...Object.values(latestCheckpoint?.areas ?? {}).map((area) => area.score),
+      ) -
+      Math.min(...Object.values(latestCheckpoint?.areas ?? {}).map((area) => area.score))
+    : null;
+  const activeDirections = state.directions.filter((direction) => direction.status !== 'Завершено').slice(0, 2);
+
   return (
     <div className="space-y-8">
       <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
@@ -42,12 +39,20 @@ const DashboardPage = () => {
             </Link>
           </div>
           <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            {metrics.map((metric) => (
-              <div key={metric.label} className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                <p className="text-xs uppercase tracking-[0.2em] text-muted">{metric.label}</p>
-                <p className="mt-2 text-sm font-semibold text-app">{metric.value}</p>
-              </div>
-            ))}
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p className="text-xs uppercase tracking-[0.2em] text-muted">Сильные зоны</p>
+              <p className="mt-2 text-sm font-semibold text-app">{strongLabels}</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p className="text-xs uppercase tracking-[0.2em] text-muted">Слабые зоны</p>
+              <p className="mt-2 text-sm font-semibold text-app">{weakLabels}</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p className="text-xs uppercase tracking-[0.2em] text-muted">Перекос</p>
+              <p className="mt-2 text-sm font-semibold text-app">
+                {balanceGap !== null ? `Разрыв ${balanceGap.toFixed(1)}` : 'Нет данных'}
+              </p>
+            </div>
           </div>
         </GlassCard>
 
@@ -94,21 +99,27 @@ const DashboardPage = () => {
             </button>
           </div>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {lifeAreas.map((area, index) => (
+            {lifeAreas.map((area, index) => {
+              const score = latestCheckpoint?.areas[area.id]?.score ?? 0;
+              const width = latestCheckpoint ? Math.min(100, score * 10) : 20;
+              return (
               <div key={area.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
                 <div className="flex items-center justify-between">
                   <p className="text-sm text-app">{area.label}</p>
-                  <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-muted">{6 + (index % 4)}</span>
+                  <span className="rounded-full bg-white/10 px-3 py-1 text-xs text-muted">{score || '–'}</span>
                 </div>
                 <div className="mt-3 h-1.5 rounded-full bg-white/5">
                   <div
                     className="h-1.5 rounded-full bg-gradient-to-r from-accent to-accent-strong"
-                    style={{ width: `${60 + (index % 4) * 8}%` }}
+                    style={{ width: `${width}%` }}
                   />
                 </div>
-                <p className="mt-3 text-xs text-muted">Комментарий: стабильная неделя</p>
+                <p className="mt-3 text-xs text-muted">
+                  {latestCheckpoint?.areas[area.id]?.note ? `Комментарий: ${latestCheckpoint.areas[area.id].note}` : 'Комментарий отсутствует'}
+                </p>
               </div>
-            ))}
+              );
+            })}
           </div>
         </GlassCard>
 
@@ -124,7 +135,12 @@ const DashboardPage = () => {
               </Link>
             </div>
             <div className="mt-6 space-y-4">
-              {directions.map((direction) => (
+              {activeDirections.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-white/10 bg-white/5 p-4 text-xs text-muted">
+                  Пока нет активных направлений. Создайте первый выбор.
+                </div>
+              ) : (
+                activeDirections.map((direction) => (
                 <div key={direction.title} className="rounded-2xl border border-white/10 bg-white/5 p-4">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-semibold text-app">{direction.title}</p>
@@ -135,10 +151,11 @@ const DashboardPage = () => {
                   <p className="mt-2 text-xs text-muted">{direction.status}</p>
                   <div className="mt-4 flex items-center gap-2 text-xs text-muted">
                     <Icon icon="solar:clock-circle-bold-duotone" width={16} />
-                    Следующая проверка через 6 дней
+                    Проверка {formatDate(direction.reviewAt)}
                   </div>
                 </div>
-              ))}
+                ))
+              )}
               <Link to="/directions" className="block rounded-full border border-white/15 px-4 py-2 text-center text-xs text-muted">
                 Все направления
               </Link>
@@ -154,13 +171,20 @@ const DashboardPage = () => {
               <Icon icon="solar:bell-bing-bold-duotone" width={20} />
             </div>
             <div className="mt-5 space-y-3">
-              {agenda.map((item) => (
-                <div key={item.title} className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-muted">
+              <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-muted">
+                <div>
+                  <p className="text-sm text-app">Следующий чекпоинт</p>
+                  <p className="mt-1">Любой момент</p>
+                </div>
+                <span className="rounded-full bg-white/10 px-3 py-1">Сегодня</span>
+              </div>
+              {activeDirections.slice(0, 1).map((direction) => (
+                <div key={direction.id} className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-muted">
                   <div>
-                    <p className="text-sm text-app">{item.title}</p>
-                    <p className="mt-1">{item.time}</p>
+                    <p className="text-sm text-app">{direction.title}</p>
+                    <p className="mt-1">Проверка {formatDate(direction.reviewAt)}</p>
                   </div>
-                  <span className="rounded-full bg-white/10 px-3 py-1">{item.tag}</span>
+                  <span className="rounded-full bg-white/10 px-3 py-1">План</span>
                 </div>
               ))}
             </div>

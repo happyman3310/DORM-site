@@ -20,6 +20,7 @@ const App: FC = () => {
         <Route path="/directions" element={<DirectionsPage />} />
         <Route path="/directions/new" element={<DirectionCreatePage />} />
         <Route path="/directions/review" element={<DirectionReviewPage />} />
+        <Route path="/directions/review/:id" element={<DirectionReviewPage />} />
         <Route path="/history" element={<HistoryPage />} />
         <Route path="/pricing" element={<PricingPage />} />
       </Route>
