@@ -1,12 +1,16 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { lifeAreas } from './lifeAreas';
+import {
+  createCheckpoint,
+  createDirection,
+  fetchCheckpoints,
+  fetchDirections,
+  fetchProfile,
+  loginUser,
+  updateDirection as updateDirectionRequest,
+  type LoginPayload,
+} from '../services/waynApi';
+import { clearToken, getToken, setToken } from '../services/tokenStorage';
 
 export type LifeAreaId = (typeof lifeAreas)[number]['id'];
 
@@ -14,7 +18,7 @@ export type UserProfile = {
   email: string;
   age?: number;
   status?: string;
-  initials: string;
+  initials?: string;
 };
 
 export type CheckpointArea = {
@@ -52,8 +56,6 @@ export type AppState = {
   plan: 'Free' | 'Pro';
 };
 
-const STORAGE_KEY = 'wayn-app-state';
-
 const defaultState: AppState = {
   user: null,
   checkpoints: [],
@@ -61,95 +63,109 @@ const defaultState: AppState = {
   plan: 'Free',
 };
 
-const safeParseState = (raw: string | null): AppState => {
-  if (!raw) return defaultState;
-  try {
-    const parsed = JSON.parse(raw) as AppState;
-    return {
-      user: parsed.user ?? null,
-      checkpoints: parsed.checkpoints ?? [],
-      directions: parsed.directions ?? [],
-      plan: parsed.plan ?? 'Free',
-    };
-  } catch {
-    return defaultState;
-  }
-};
-
-const addPeriod = (date: Date, period: string) => {
-  const result = new Date(date);
-  if (period.includes('нед')) {
-    const weeks = Number.parseInt(period, 10) || 2;
-    result.setDate(result.getDate() + weeks * 7);
-  } else if (period.includes('месяц')) {
-    const months = Number.parseInt(period, 10) || 1;
-    result.setMonth(result.getMonth() + months);
-  } else {
-    result.setDate(result.getDate() + 14);
-  }
-  return result;
-};
-
 type AppDataContextValue = {
   state: AppState;
-  login: (profile: UserProfile) => void;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (payload: LoginPayload) => Promise<void>;
   logout: () => void;
-  addCheckpoint: (areas: Record<LifeAreaId, CheckpointArea>) => void;
-  addDirection: (direction: Omit<Direction, 'id' | 'createdAt' | 'reviewAt' | 'status'>) => void;
-  updateDirection: (id: string, updates: Partial<Direction>) => void;
+  addCheckpoint: (areas: Record<LifeAreaId, CheckpointArea>) => Promise<void>;
+  addDirection: (direction: Omit<Direction, 'id' | 'createdAt' | 'reviewAt' | 'status'>) => Promise<void>;
+  updateDirection: (id: string, updates: Partial<Direction>) => Promise<void>;
   setPlan: (plan: AppState['plan']) => void;
 };
 
 const AppDataContext = createContext<AppDataContextValue | undefined>(undefined);
 
 export const AppDataProvider = ({ children }: { children: ReactNode }) => {
-  const [state, setState] = useState<AppState>(() => safeParseState(localStorage.getItem(STORAGE_KEY)));
+  const [state, setState] = useState<AppState>(defaultState);
+  const [tokenValue, setTokenValue] = useState<string | null>(() => getToken());
+  const [isLoading, setIsLoading] = useState(true);
+
+  const withInitials = (profile: UserProfile) => {
+    if (profile.initials) return profile;
+    const initials = profile.email
+      .split('@')[0]
+      .split(/[^a-zA-Zа-яА-Я0-9]+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0].toUpperCase())
+      .join('');
+    return { ...profile, initials: initials || 'WA' };
+  };
+
+  const loadSession = async (token: string | null = tokenValue) => {
+    if (!token) {
+      setState(defaultState);
+      setIsLoading(false);
+      return;
+    }
+    setIsLoading(true);
+    try {
+      const [profile, checkpoints, directions] = await Promise.all([
+        fetchProfile(),
+        fetchCheckpoints(),
+        fetchDirections(),
+      ]);
+      setState((prev) => ({
+        ...prev,
+        user: profile ? withInitials(profile) : null,
+        checkpoints,
+        directions,
+      }));
+    } catch {
+      clearToken();
+      setTokenValue(null);
+      setState(defaultState);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  }, [state]);
+    loadSession();
+  }, [tokenValue]);
 
-  const login = (profile: UserProfile) => {
-    setState((prev) => ({ ...prev, user: profile }));
+  const login = async (payload: LoginPayload) => {
+    const response = await loginUser(payload);
+    setToken(response.token);
+    setTokenValue(response.token);
+    setState((prev) => ({
+      ...prev,
+      user: withInitials(response.user),
+      plan: response.plan ?? prev.plan,
+    }));
+    await loadSession(response.token);
   };
 
   const logout = () => {
-    setState((prev) => ({ ...prev, user: null }));
+    clearToken();
+    setTokenValue(null);
+    setState(defaultState);
   };
 
-  const addCheckpoint = (areas: Record<LifeAreaId, CheckpointArea>) => {
-    const checkpoint: Checkpoint = {
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      areas,
-    };
+  const addCheckpoint = async (areas: Record<LifeAreaId, CheckpointArea>) => {
+    const checkpoint = await createCheckpoint({ areas });
     setState((prev) => ({
       ...prev,
       checkpoints: [checkpoint, ...prev.checkpoints],
     }));
   };
 
-  const addDirection: AppDataContextValue['addDirection'] = (direction) => {
-    const createdAt = new Date();
-    const reviewAt = addPeriod(createdAt, direction.period).toISOString();
-    const newDirection: Direction = {
-      ...direction,
-      id: crypto.randomUUID(),
-      createdAt: createdAt.toISOString(),
-      reviewAt,
-      status: 'В процессе',
-    };
+  const addDirection: AppDataContextValue['addDirection'] = async (direction) => {
+    const newDirection = await createDirection(direction);
     setState((prev) => ({
       ...prev,
       directions: [newDirection, ...prev.directions],
     }));
   };
 
-  const updateDirection = (id: string, updates: Partial<Direction>) => {
+  const updateDirection = async (id: string, updates: Partial<Direction>) => {
+    const updated = await updateDirectionRequest(id, updates);
     setState((prev) => ({
       ...prev,
       directions: prev.directions.map((direction) =>
-        direction.id === id ? { ...direction, ...updates } : direction,
+        direction.id === id ? updated : direction,
       ),
     }));
   };
@@ -161,6 +177,8 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
   const value = useMemo(
     () => ({
       state,
+      isAuthenticated: Boolean(tokenValue),
+      isLoading,
       login,
       logout,
       addCheckpoint,
@@ -168,7 +186,7 @@ export const AppDataProvider = ({ children }: { children: ReactNode }) => {
       updateDirection,
       setPlan,
     }),
-    [state],
+    [state, tokenValue, isLoading],
   );
 
   return <AppDataContext.Provider value={value}>{children}</AppDataContext.Provider>;

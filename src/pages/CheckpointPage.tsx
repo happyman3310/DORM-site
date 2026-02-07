@@ -16,11 +16,21 @@ const CheckpointPage = () => {
       {} as Record<LifeAreaId, { score: number; note: string }>,
     ),
   );
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    addCheckpoint(areas);
-    navigate('/');
+    setError('');
+    setIsSubmitting(true);
+    try {
+      await addCheckpoint(areas);
+      navigate('/');
+    } catch {
+      setError('Не удалось сохранить чекпоинт. Попробуйте снова.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -74,12 +84,14 @@ const CheckpointPage = () => {
               </div>
             </div>
           ))}
+          {error ? <p className="text-xs text-rose-300">{error}</p> : null}
           <div className="flex flex-wrap gap-3">
             <button
               type="submit"
+              disabled={isSubmitting}
               className="rounded-full bg-accent px-6 py-2 text-sm font-semibold text-white shadow-glow"
             >
-              Сохранить чекпоинт
+              {isSubmitting ? 'Сохраняем...' : 'Сохранить чекпоинт'}
             </button>
             <Link to="/history" className="rounded-full border border-white/15 px-6 py-2 text-sm text-muted">
               История
