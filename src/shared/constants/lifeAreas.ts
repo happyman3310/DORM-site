@@ -6,4 +6,4 @@ export const lifeAreas = [
   { id: 'energy', label: 'Энергия / состояние' },
   { id: 'environment', label: 'Окружение' },
   { id: 'meaning', label: 'Смысл / направление' },
-];
+] as const;

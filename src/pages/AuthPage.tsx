@@ -2,37 +2,38 @@ import { Icon } from '@iconify/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import GlassCard from '../components/GlassCard';
-import { useAppData } from '../data/appData';
+import { authApi } from '../shared/api';
 
 const AuthPage = () => {
   const navigate = useNavigate();
-  const { login } = useAppData();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [age, setAge] = useState('');
   const [status, setStatus] = useState('Школа');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!email || !password) {
       setError('Заполните email и пароль.');
       return;
     }
-    const initials = email
-      .split('@')[0]
-      .split(/[^a-zA-Zа-яА-Я0-9]+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0].toUpperCase())
-      .join('');
-    login({
-      email,
-      age: age ? Number(age) : undefined,
-      status,
-      initials: initials || 'WA',
-    });
-    navigate('/');
+    setIsSubmitting(true);
+    setError('');
+    try {
+      await authApi.login({
+        email,
+        password,
+        age: age ? Number(age) : undefined,
+        status,
+      });
+      navigate('/');
+    } catch {
+      setError('Не удалось выполнить вход.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -107,9 +108,10 @@ const AuthPage = () => {
             {error ? <p className="text-xs text-rose-300">{error}</p> : null}
             <button
               type="submit"
+              disabled={isSubmitting}
               className="block w-full rounded-2xl bg-accent px-6 py-3 text-center text-sm font-semibold text-white shadow-glow"
             >
-              Продолжить
+              {isSubmitting ? 'Входим...' : 'Продолжить'}
             </button>
             <p className="text-center text-xs text-muted">
               Нет аккаунта? <span className="text-app">Создать</span>

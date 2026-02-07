@@ -1,13 +1,46 @@
 import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import GlassCard from '../components/GlassCard';
-import { formatDate, useAppData } from '../data/appData';
+import { directionsApi, type Direction } from '../shared/api';
+import { formatDate } from '../shared/utils/formatting';
 
 const DirectionsPage = () => {
-  const { state } = useAppData();
+  const [directions, setDirections] = useState<Direction[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchDirections = async () => {
+      setIsLoading(true);
+      setError('');
+      try {
+        const response = await directionsApi.listDirections();
+        setDirections(response);
+      } catch {
+        setError('Не удалось загрузить направления.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    void fetchDirections();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        <GlassCard>Загрузка направлений...</GlassCard>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
+      {error ? (
+        <GlassCard className="border border-rose-300/40 text-sm text-rose-200">
+          {error}
+        </GlassCard>
+      ) : null}
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-muted">Выбор направления</p>
@@ -19,7 +52,7 @@ const DirectionsPage = () => {
         </Link>
       </header>
 
-      {state.directions.length === 0 ? (
+      {directions.length === 0 ? (
         <GlassCard>
           <div className="space-y-3 text-sm text-muted">
             <p>Пока нет созданных направлений.</p>
@@ -30,7 +63,7 @@ const DirectionsPage = () => {
         </GlassCard>
       ) : (
         <div className="grid gap-6 lg:grid-cols-2">
-          {state.directions.map((direction) => (
+          {directions.map((direction) => (
             <GlassCard key={direction.id} className="space-y-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-app">{direction.title}</h2>

@@ -1,52 +1,111 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import GlassCard from '../components/GlassCard';
-import { formatDate, useAppData } from '../data/appData';
+import { directionsApi, type Direction } from '../shared/api';
+import { formatDate } from '../shared/utils/formatting';
 
 const DirectionReviewPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { state, updateDirection } = useAppData();
-  const direction = useMemo(
-    () => state.directions.find((item) => item.id === id) ?? state.directions[0] ?? null,
-    [id, state.directions],
-  );
-  const [actuals, setActuals] = useState<Record<string, number>>(() => {
-    if (!direction) return {};
-    return Object.fromEntries(
-      Object.entries(direction.criteria).map(([key, value]) => [key, value.actual ?? value.expected]),
-    );
-  });
+  const [direction, setDirection] = useState<Direction | null>(null);
+  const [actuals, setActuals] = useState<Record<string, number>>({});
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const handleSubmit = () => {
-    if (!direction) return;
-    updateDirection(direction.id, {
-      status: 'Завершено',
-      criteria: Object.fromEntries(
+  useEffect(() => {
+    const fetchDirection = async () => {
+      setIsLoading(true);
+      setError('');
+      try {
+        if (id) {
+          const response = await directionsApi.getDirection(id);
+          setDirection(response);
+        } else {
+          const response = await directionsApi.listDirections();
+          setDirection(response[0] ?? null);
+        }
+      } catch {
+        setError('Не удалось загрузить направление.');
+        setDirection(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    void fetchDirection();
+  }, [id]);
+
+  useEffect(() => {
+    if (!direction) {
+      setActuals({});
+      return;
+    }
+    setActuals(
+      Object.fromEntries(
         Object.entries(direction.criteria).map(([key, value]) => [
           key,
-          { ...value, actual: actuals[key] ?? value.expected },
+          value.actual ?? value.expected,
         ]),
       ),
-    });
-    navigate('/history');
+    );
+  }, [direction]);
+
+  const handleSubmit = async () => {
+    if (!direction) return;
+    setError('');
+    setIsLoading(true);
+    try {
+      await directionsApi.updateDirection(direction.id, {
+        status: 'Завершено',
+        criteria: Object.fromEntries(
+          Object.entries(direction.criteria).map(([key, value]) => [
+            key,
+            { ...value, actual: actuals[key] ?? value.expected },
+          ]),
+        ),
+      });
+      navigate('/history');
+    } catch {
+      setError('Не удалось сохранить результаты проверки.');
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        <GlassCard>Загрузка проверки...</GlassCard>
+      </div>
+    );
+  }
 
   if (!direction) {
     return (
-      <GlassCard>
-        <div className="space-y-3 text-sm text-muted">
-          <p>Нет направлений для проверки.</p>
-          <Link to="/directions" className="inline-flex rounded-full bg-accent px-5 py-2 text-xs font-semibold text-white shadow-glow">
-            Перейти к направлениям
-          </Link>
-        </div>
-      </GlassCard>
+      <div className="space-y-8">
+        {error ? (
+          <GlassCard className="border border-rose-300/40 text-sm text-rose-200">
+            {error}
+          </GlassCard>
+        ) : null}
+        <GlassCard>
+          <div className="space-y-3 text-sm text-muted">
+            <p>Нет направлений для проверки.</p>
+            <Link to="/directions" className="inline-flex rounded-full bg-accent px-5 py-2 text-xs font-semibold text-white shadow-glow">
+              Перейти к направлениям
+            </Link>
+          </div>
+        </GlassCard>
+      </div>
     );
   }
 
   return (
     <div className="space-y-8">
+      {error ? (
+        <GlassCard className="border border-rose-300/40 text-sm text-rose-200">
+          {error}
+        </GlassCard>
+      ) : null}
       <header className="space-y-2">
         <p className="text-xs uppercase tracking-[0.2em] text-muted">Проверка выбора</p>
         <h1 className="text-2xl font-semibold text-app">Сравнение ожиданий и реальности</h1>
@@ -105,9 +164,10 @@ const DirectionReviewPage = () => {
             <button
               type="button"
               onClick={handleSubmit}
+              disabled={isLoading}
               className="rounded-full bg-accent px-6 py-2 text-sm font-semibold text-white shadow-glow"
             >
-              Завершить проверку
+              {isLoading ? 'Сохранение...' : 'Завершить проверку'}
             </button>
             <Link to="/history" className="rounded-full border border-white/15 px-6 py-2 text-sm text-muted">
               Смотреть динамику

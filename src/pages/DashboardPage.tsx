@@ -1,12 +1,46 @@
 import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import GlassCard from '../components/GlassCard';
-import { lifeAreas } from '../data/lifeAreas';
-import { calculateAreaSummary, formatAreaLabels, formatDate, useAppData } from '../data/appData';
+import { checkpointsApi, directionsApi, type Checkpoint, type Direction } from '../shared/api';
+import { lifeAreas } from '../shared/constants/lifeAreas';
+import { calculateAreaSummary, formatAreaLabels, formatDate } from '../shared/utils/formatting';
 
 const DashboardPage = () => {
-  const { state } = useAppData();
-  const latestCheckpoint = state.checkpoints[0] ?? null;
+  const [checkpoints, setCheckpoints] = useState<Checkpoint[]>([]);
+  const [directions, setDirections] = useState<Direction[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError('');
+      try {
+        const [checkpointsResponse, directionsResponse] = await Promise.all([
+          checkpointsApi.listCheckpoints(),
+          directionsApi.listDirections(),
+        ]);
+        setCheckpoints(checkpointsResponse);
+        setDirections(directionsResponse);
+      } catch {
+        setError('Не удалось загрузить данные панели.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    void fetchData();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        <GlassCard>Загрузка панели...</GlassCard>
+      </div>
+    );
+  }
+
+  const latestCheckpoint = checkpoints[0] ?? null;
   const summary = calculateAreaSummary(latestCheckpoint);
   const strongLabels = summary ? formatAreaLabels(summary.strong) : 'Нет данных';
   const weakLabels = summary ? formatAreaLabels(summary.weak) : 'Нет данных';
@@ -16,10 +50,15 @@ const DashboardPage = () => {
       ) -
       Math.min(...Object.values(latestCheckpoint?.areas ?? {}).map((area) => area.score))
     : null;
-  const activeDirections = state.directions.filter((direction) => direction.status !== 'Завершено').slice(0, 2);
+  const activeDirections = directions.filter((direction) => direction.status !== 'Завершено').slice(0, 2);
 
   return (
     <div className="space-y-8">
+      {error ? (
+        <GlassCard className="border border-rose-300/40 text-sm text-rose-200">
+          {error}
+        </GlassCard>
+      ) : null}
       <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
         <GlassCard className="relative overflow-hidden">
           <div className="absolute right-6 top-6 h-24 w-24 rounded-full bg-accent/30 blur-2xl" />

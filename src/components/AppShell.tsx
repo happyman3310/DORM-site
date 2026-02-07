@@ -2,7 +2,8 @@ import { Outlet, NavLink, Link } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import { useEffect, useState } from 'react';
 import ThemeToggle from './ThemeToggle';
-import { useAppData } from '../data/appData';
+import { authApi, profileApi, type UserProfile } from '../shared/api';
+import { ApiError } from '../shared/api/client';
 
 const navItems = [
   { to: '/', label: 'Панель', icon: 'solar:home-2-bold-duotone' },
@@ -14,11 +15,43 @@ const navItems = [
 
 const AppShell = () => {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-  const { state, logout } = useAppData();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
   }, [theme]);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setIsLoading(true);
+      setError('');
+      try {
+        const response = await profileApi.getProfile();
+        setProfile(response.profile);
+      } catch (err) {
+        if (err instanceof ApiError && err.status === 401) {
+          setProfile(null);
+        } else {
+          setError('Не удалось загрузить профиль.');
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    void fetchProfile();
+  }, []);
+
+  const handleLogout = async () => {
+    setError('');
+    try {
+      await authApi.logout();
+      setProfile(null);
+    } catch {
+      setError('Не удалось выйти из профиля.');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-app text-app">
@@ -54,16 +87,17 @@ const AppShell = () => {
               Понедельник, 15 сентября
             </div>
             <ThemeToggle theme={theme} setTheme={setTheme} />
-            {state.user ? (
+            {profile ? (
               <button
                 type="button"
-                onClick={logout}
+                onClick={handleLogout}
+                disabled={isLoading}
                 className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs text-muted transition hover:text-app md:flex"
               >
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent/30 text-[10px] text-accent">
-                  {state.user.initials}
+                  {profile.initials}
                 </span>
-                Выйти
+                {isLoading ? '...' : 'Выйти'}
               </button>
             ) : (
               <Link
@@ -73,11 +107,12 @@ const AppShell = () => {
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent/30 text-[10px] text-accent">
                   ??
                 </span>
-                Войти
+                {isLoading ? '...' : 'Войти'}
               </Link>
             )}
           </div>
         </div>
+        {error ? <p className="px-6 pb-3 text-xs text-rose-300">{error}</p> : null}
       </header>
 
       <main className="mx-auto w-full max-w-6xl px-6 pb-24 pt-8">

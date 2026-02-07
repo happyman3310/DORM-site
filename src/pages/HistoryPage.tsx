@@ -1,12 +1,41 @@
 import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import GlassCard from '../components/GlassCard';
-import { lifeAreas } from '../data/lifeAreas';
-import { formatDate, useAppData } from '../data/appData';
+import { historyApi, type Checkpoint } from '../shared/api';
+import { lifeAreas } from '../shared/constants/lifeAreas';
+import { formatDate } from '../shared/utils/formatting';
 
 const HistoryPage = () => {
-  const { state } = useAppData();
-  const [current, previous] = state.checkpoints;
+  const [checkpoints, setCheckpoints] = useState<Checkpoint[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      setIsLoading(true);
+      setError('');
+      try {
+        const response = await historyApi.getHistory();
+        setCheckpoints(response.checkpoints);
+      } catch {
+        setError('Не удалось загрузить историю.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    void fetchHistory();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        <GlassCard>Загрузка истории...</GlassCard>
+      </div>
+    );
+  }
+
+  const [current, previous] = checkpoints;
 
   const changes = lifeAreas.map((area) => {
     const currentScore = current?.areas[area.id]?.score ?? null;
@@ -22,6 +51,11 @@ const HistoryPage = () => {
 
   return (
     <div className="space-y-8">
+      {error ? (
+        <GlassCard className="border border-rose-300/40 text-sm text-rose-200">
+          {error}
+        </GlassCard>
+      ) : null}
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div className="space-y-2">
           <p className="text-xs uppercase tracking-[0.2em] text-muted">История</p>
@@ -42,7 +76,7 @@ const HistoryPage = () => {
             </div>
             <Icon icon="solar:chart-2-bold-duotone" width={24} />
           </div>
-          {state.checkpoints.length === 0 ? (
+          {checkpoints.length === 0 ? (
             <div className="mt-6 rounded-3xl border border-dashed border-white/10 bg-gradient-to-br from-white/5 via-transparent to-white/10 p-6">
               <div className="flex h-48 items-center justify-center text-center text-sm text-muted">
                 Добавьте первый чекпоинт, чтобы видеть динамику.
@@ -50,7 +84,7 @@ const HistoryPage = () => {
             </div>
           ) : (
             <div className="mt-6 space-y-4">
-              {state.checkpoints.slice(0, 3).map((checkpoint) => (
+              {checkpoints.slice(0, 3).map((checkpoint) => (
                 <div key={checkpoint.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
                   <div className="flex items-center justify-between">
                     <p className="text-sm text-app">Чекпоинт {formatDate(checkpoint.createdAt)}</p>
