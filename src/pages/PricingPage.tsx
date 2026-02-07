@@ -1,11 +1,57 @@
+import { useEffect, useState } from 'react';
 import GlassCard from '../components/GlassCard';
-import { useAppData } from '../data/appData';
+import { profileApi, type Plan } from '../shared/api';
 
 const PricingPage = () => {
-  const { state, setPlan } = useAppData();
+  const [plan, setPlan] = useState<Plan>('Free');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchPlan = async () => {
+      setIsLoading(true);
+      setError('');
+      try {
+        const response = await profileApi.getProfile();
+        setPlan(response.plan);
+      } catch {
+        setError('Не удалось загрузить тариф.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    void fetchPlan();
+  }, []);
+
+  const handlePlanChange = async (nextPlan: Plan) => {
+    setIsUpdating(true);
+    setError('');
+    try {
+      const response = await profileApi.updatePlan(nextPlan);
+      setPlan(response.plan);
+    } catch {
+      setError('Не удалось обновить тариф.');
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        <GlassCard>Загрузка тарифов...</GlassCard>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
+      {error ? (
+        <GlassCard className="border border-rose-300/40 text-sm text-rose-200">
+          {error}
+        </GlassCard>
+      ) : null}
       <header className="space-y-2">
         <p className="text-xs uppercase tracking-[0.2em] text-muted">Монетизация</p>
         <h1 className="text-2xl font-semibold text-app">Тарифы</h1>
@@ -22,17 +68,18 @@ const PricingPage = () => {
             <li>• История за 30 дней</li>
             <li>• Базовая интерпретация</li>
           </ul>
-          {state.plan === 'Free' ? (
+          {plan === 'Free' ? (
             <span className="inline-flex rounded-full border border-white/15 px-6 py-2 text-sm text-app">
               Текущий план
             </span>
           ) : (
             <button
               type="button"
-              onClick={() => setPlan('Free')}
+              disabled={isUpdating}
+              onClick={() => handlePlanChange('Free')}
               className="rounded-full border border-white/15 px-6 py-2 text-sm text-app"
             >
-              Выбрать Free
+              {isUpdating ? 'Обновление...' : 'Выбрать Free'}
             </button>
           )}
         </GlassCard>
@@ -46,17 +93,18 @@ const PricingPage = () => {
             <li>• История за 12 месяцев</li>
             <li>• Сравнение сценариев</li>
           </ul>
-          {state.plan === 'Pro' ? (
+          {plan === 'Pro' ? (
             <span className="inline-flex rounded-full bg-accent px-6 py-2 text-sm font-semibold text-white shadow-glow">
               Текущий план
             </span>
           ) : (
             <button
               type="button"
-              onClick={() => setPlan('Pro')}
+              disabled={isUpdating}
+              onClick={() => handlePlanChange('Pro')}
               className="rounded-full bg-accent px-6 py-2 text-sm font-semibold text-white shadow-glow"
             >
-              Активировать Pro
+              {isUpdating ? 'Обновление...' : 'Активировать Pro'}
             </button>
           )}
         </GlassCard>

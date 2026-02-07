@@ -1,14 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import GlassCard from '../components/GlassCard';
-import { useAppData } from '../data/appData';
+import { directionsApi } from '../shared/api';
 
 const criteriaList = ['Интерес', 'Сложность', 'Энергия', 'Соответствие ожиданиям', 'Реальность'];
 const periodOptions = ['2 недели', '1 месяц', '3 месяца'];
 
 const DirectionCreatePage = () => {
   const navigate = useNavigate();
-  const { addDirection } = useAppData();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [expectedOutcome, setExpectedOutcome] = useState('');
@@ -17,23 +16,32 @@ const DirectionCreatePage = () => {
     criteriaList.reduce((acc, item) => ({ ...acc, [item]: 7 }), {}),
   );
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!title || !expectedOutcome) {
       setError('Заполните название и ожидаемый результат.');
       return;
     }
-    addDirection({
-      title,
-      description,
-      expectedOutcome,
-      period,
-      criteria: Object.fromEntries(
-        Object.entries(criteria).map(([key, value]) => [key, { expected: value }]),
-      ),
-    });
-    navigate('/directions');
+    setIsSubmitting(true);
+    setError('');
+    try {
+      await directionsApi.createDirection({
+        title,
+        description,
+        expectedOutcome,
+        period,
+        criteria: Object.fromEntries(
+          Object.entries(criteria).map(([key, value]) => [key, { expected: value }]),
+        ),
+      });
+      navigate('/directions');
+    } catch {
+      setError('Не удалось сохранить направление.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -120,9 +128,10 @@ const DirectionCreatePage = () => {
           <div className="flex flex-wrap gap-3">
             <button
               type="submit"
+              disabled={isSubmitting}
               className="rounded-full bg-accent px-6 py-2 text-sm font-semibold text-white shadow-glow"
             >
-              Сохранить выбор
+              {isSubmitting ? 'Сохранение...' : 'Сохранить выбор'}
             </button>
             <Link to="/directions" className="rounded-full border border-white/15 px-6 py-2 text-sm text-muted">
               Отменить

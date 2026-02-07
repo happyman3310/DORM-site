@@ -1,12 +1,11 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import GlassCard from '../components/GlassCard';
-import { lifeAreas } from '../data/lifeAreas';
-import { useAppData, type LifeAreaId } from '../data/appData';
+import { checkpointsApi, type LifeAreaId } from '../shared/api';
+import { lifeAreas } from '../shared/constants/lifeAreas';
 
 const CheckpointPage = () => {
   const navigate = useNavigate();
-  const { addCheckpoint } = useAppData();
   const [areas, setAreas] = useState<Record<LifeAreaId, { score: number; note: string }>>(
     lifeAreas.reduce(
       (acc, area) => ({
@@ -16,11 +15,21 @@ const CheckpointPage = () => {
       {} as Record<LifeAreaId, { score: number; note: string }>,
     ),
   );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    addCheckpoint(areas);
-    navigate('/');
+    setIsSubmitting(true);
+    setError('');
+    try {
+      await checkpointsApi.createCheckpoint({ areas });
+      navigate('/');
+    } catch {
+      setError('Не удалось сохранить чекпоинт.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -74,12 +83,14 @@ const CheckpointPage = () => {
               </div>
             </div>
           ))}
+          {error ? <p className="text-xs text-rose-300">{error}</p> : null}
           <div className="flex flex-wrap gap-3">
             <button
               type="submit"
+              disabled={isSubmitting}
               className="rounded-full bg-accent px-6 py-2 text-sm font-semibold text-white shadow-glow"
             >
-              Сохранить чекпоинт
+              {isSubmitting ? 'Сохранение...' : 'Сохранить чекпоинт'}
             </button>
             <Link to="/history" className="rounded-full border border-white/15 px-6 py-2 text-sm text-muted">
               История
