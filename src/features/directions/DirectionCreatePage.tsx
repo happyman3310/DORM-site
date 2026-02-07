@@ -1,7 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import GlassCard from '../components/GlassCard';
-import { useAppData } from '../data/appData';
+import GlassCard from '../../shared/components/GlassCard';
+import { useAppData } from '../../data/appData';
 
 const criteriaList = ['Интерес', 'Сложность', 'Энергия', 'Соответствие ожиданиям', 'Реальность'];
 const periodOptions = ['2 недели', '1 месяц', '3 месяца'];

@@ -1,7 +1,7 @@
 import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
-import GlassCard from '../components/GlassCard';
-import { formatDate, useAppData } from '../data/appData';
+import GlassCard from '../../shared/components/GlassCard';
+import { formatDate, useAppData } from '../../data/appData';
 
 const DirectionsPage = () => {
   const { state } = useAppData();

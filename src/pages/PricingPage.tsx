@@ -1,4 +1,4 @@
-import GlassCard from '../components/GlassCard';
+import GlassCard from '../shared/components/GlassCard';
 import { useAppData } from '../data/appData';
 
 const PricingPage = () => {

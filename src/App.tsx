@@ -1,12 +1,12 @@
 import { Routes, Route } from 'react-router-dom';
 import { FC } from 'react';
-import AppShell from './components/AppShell';
-import AuthPage from './pages/AuthPage';
-import CheckpointPage from './pages/CheckpointPage';
+import AppShell from './shared/components/AppShell';
+import AuthPage from './features/auth/AuthPage';
+import CheckpointPage from './features/checkpoint/CheckpointPage';
 import DashboardPage from './pages/DashboardPage';
-import DirectionCreatePage from './pages/DirectionCreatePage';
-import DirectionReviewPage from './pages/DirectionReviewPage';
-import DirectionsPage from './pages/DirectionsPage';
+import DirectionCreatePage from './features/directions/DirectionCreatePage';
+import DirectionReviewPage from './features/directions/DirectionReviewPage';
+import DirectionsPage from './features/directions/DirectionsPage';
 import HistoryPage from './pages/HistoryPage';
 import PricingPage from './pages/PricingPage';
 
