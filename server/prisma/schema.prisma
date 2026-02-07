@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DirectionStatus {
+  IN_PROGRESS
+  PENDING_REVIEW
+  COMPLETED
+}
+
+model User {
+  id            String          @id @default(uuid())
+  email         String          @unique
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  profile       StudentProfile?
+  checkpoints   Checkpoint[]
+  directions    UserDirection[]
+  historyEvents HistoryEvent[]
+}
+
+model StudentProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  firstName String
+  lastName  String
+  age       Int?
+  status    String?
+  initials  String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Checkpoint {
+  id            String         @id @default(uuid())
+  userId        String
+  createdAt     DateTime       @default(now())
+  areas         Json
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  historyEvents HistoryEvent[]
+
+  @@index([userId])
+}
+
+model Direction {
+  id            String         @id @default(uuid())
+  title         String
+  description   String
+  expectedOutcome String
+  period        String
+  createdAt     DateTime       @default(now())
+  reviewAt      DateTime
+  status        DirectionStatus @default(IN_PROGRESS)
+  criteria      Json
+  userDirections UserDirection[]
+  historyEvents HistoryEvent[]
+}
+
+model UserDirection {
+  id          String         @id @default(uuid())
+  userId      String
+  directionId String
+  assignedAt  DateTime       @default(now())
+  status      DirectionStatus @default(IN_PROGRESS)
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  direction   Direction      @relation(fields: [directionId], references: [id], onDelete: Cascade)
+  historyEvents HistoryEvent[]
+
+  @@unique([userId, directionId])
+  @@index([directionId])
+}
+
+model HistoryEvent {
+  id             String        @id @default(uuid())
+  userId         String
+  checkpointId   String?
+  directionId    String?
+  userDirectionId String?
+  eventType      String
+  payload        Json?
+  createdAt      DateTime      @default(now())
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  checkpoint     Checkpoint?   @relation(fields: [checkpointId], references: [id], onDelete: SetNull)
+  direction      Direction?    @relation(fields: [directionId], references: [id], onDelete: SetNull)
+  userDirection  UserDirection? @relation(fields: [userDirectionId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([directionId])
+}
