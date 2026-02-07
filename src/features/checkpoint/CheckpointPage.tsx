@@ -1,8 +1,8 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import GlassCard from '../components/GlassCard';
-import { lifeAreas } from '../data/lifeAreas';
-import { useAppData, type LifeAreaId } from '../data/appData';
+import GlassCard from '../../shared/components/GlassCard';
+import { lifeAreas } from '../../data/lifeAreas';
+import { useAppData, type LifeAreaId } from '../../data/appData';
 
 const CheckpointPage = () => {
   const navigate = useNavigate();

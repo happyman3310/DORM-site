@@ -1,7 +1,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useMemo, useState } from 'react';
-import GlassCard from '../components/GlassCard';
-import { formatDate, useAppData } from '../data/appData';
+import GlassCard from '../../shared/components/GlassCard';
+import { formatDate, useAppData } from '../../data/appData';
 
 const DirectionReviewPage = () => {
   const { id } = useParams();

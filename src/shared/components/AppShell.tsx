@@ -2,7 +2,7 @@ import { Outlet, NavLink, Link } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import { useEffect, useState } from 'react';
 import ThemeToggle from './ThemeToggle';
-import { useAppData } from '../data/appData';
+import { useAppData } from '../../data/appData';
 
 const navItems = [
   { to: '/', label: 'Панель', icon: 'solar:home-2-bold-duotone' },

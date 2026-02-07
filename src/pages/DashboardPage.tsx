@@ -1,6 +1,6 @@
 import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
-import GlassCard from '../components/GlassCard';
+import GlassCard from '../shared/components/GlassCard';
 import { lifeAreas } from '../data/lifeAreas';
 import { calculateAreaSummary, formatAreaLabels, formatDate, useAppData } from '../data/appData';
 
