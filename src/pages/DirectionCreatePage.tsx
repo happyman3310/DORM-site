@@ -17,23 +17,32 @@ const DirectionCreatePage = () => {
     criteriaList.reduce((acc, item) => ({ ...acc, [item]: 7 }), {}),
   );
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!title || !expectedOutcome) {
       setError('Заполните название и ожидаемый результат.');
       return;
     }
-    addDirection({
-      title,
-      description,
-      expectedOutcome,
-      period,
-      criteria: Object.fromEntries(
-        Object.entries(criteria).map(([key, value]) => [key, { expected: value }]),
-      ),
-    });
-    navigate('/directions');
+    setError('');
+    setIsSubmitting(true);
+    try {
+      await addDirection({
+        title,
+        description,
+        expectedOutcome,
+        period,
+        criteria: Object.fromEntries(
+          Object.entries(criteria).map(([key, value]) => [key, { expected: value }]),
+        ),
+      });
+      navigate('/directions');
+    } catch {
+      setError('Не удалось сохранить направление. Проверьте данные и попробуйте снова.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -120,9 +129,10 @@ const DirectionCreatePage = () => {
           <div className="flex flex-wrap gap-3">
             <button
               type="submit"
-              className="rounded-full bg-accent px-6 py-2 text-sm font-semibold text-white shadow-glow"
+              disabled={isSubmitting}
+              className="rounded-full bg-accent px-6 py-2 text-sm font-semibold text-white shadow-glow disabled:cursor-not-allowed disabled:opacity-70"
             >
-              Сохранить выбор
+              {isSubmitting ? 'Сохраняем...' : 'Сохранить выбор'}
             </button>
             <Link to="/directions" className="rounded-full border border-white/15 px-6 py-2 text-sm text-muted">
               Отменить

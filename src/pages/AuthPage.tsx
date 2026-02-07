@@ -1,38 +1,48 @@
 import { Icon } from '@iconify/react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import GlassCard from '../components/GlassCard';
 import { useAppData } from '../data/appData';
 
 const AuthPage = () => {
   const navigate = useNavigate();
-  const { login } = useAppData();
+  const { login, isAuthenticated } = useAppData();
+  const location = useLocation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [age, setAge] = useState('');
   const [status, setStatus] = useState('Школа');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    if (isAuthenticated) {
+      const destination = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname ?? '/';
+      navigate(destination, { replace: true });
+    }
+  }, [isAuthenticated, location.state, navigate]);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!email || !password) {
       setError('Заполните email и пароль.');
       return;
     }
-    const initials = email
-      .split('@')[0]
-      .split(/[^a-zA-Zа-яА-Я0-9]+/)
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((part) => part[0].toUpperCase())
-      .join('');
-    login({
+    setError('');
+    setIsSubmitting(true);
+    try {
+      await login({
       email,
+        password,
       age: age ? Number(age) : undefined,
       status,
-      initials: initials || 'WA',
-    });
-    navigate('/');
+      });
+      navigate('/', { replace: true });
+    } catch {
+      setError('Не удалось войти. Проверьте данные и попробуйте снова.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -107,9 +117,10 @@ const AuthPage = () => {
             {error ? <p className="text-xs text-rose-300">{error}</p> : null}
             <button
               type="submit"
-              className="block w-full rounded-2xl bg-accent px-6 py-3 text-center text-sm font-semibold text-white shadow-glow"
+              disabled={isSubmitting}
+              className="block w-full rounded-2xl bg-accent px-6 py-3 text-center text-sm font-semibold text-white shadow-glow disabled:cursor-not-allowed disabled:opacity-70"
             >
-              Продолжить
+              {isSubmitting ? 'Входим...' : 'Продолжить'}
             </button>
             <p className="text-center text-xs text-muted">
               Нет аккаунта? <span className="text-app">Создать</span>

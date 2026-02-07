@@ -1,4 +1,4 @@
-import { Outlet, NavLink, Link } from 'react-router-dom';
+import { Outlet, NavLink, Link, useNavigate } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import { useEffect, useState } from 'react';
 import ThemeToggle from './ThemeToggle';
@@ -13,8 +13,9 @@ const navItems = [
 ];
 
 const AppShell = () => {
+  const navigate = useNavigate();
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-  const { state, logout } = useAppData();
+  const { state, logout, isAuthenticated } = useAppData();
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
@@ -54,14 +55,17 @@ const AppShell = () => {
               Понедельник, 15 сентября
             </div>
             <ThemeToggle theme={theme} setTheme={setTheme} />
-            {state.user ? (
+            {isAuthenticated ? (
               <button
                 type="button"
-                onClick={logout}
+                onClick={() => {
+                  logout();
+                  navigate('/auth');
+                }}
                 className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs text-muted transition hover:text-app md:flex"
               >
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-accent/30 text-[10px] text-accent">
-                  {state.user.initials}
+                  {state.user?.initials ?? '??'}
                 </span>
                 Выйти
               </button>

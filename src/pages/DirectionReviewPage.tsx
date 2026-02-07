@@ -18,18 +18,29 @@ const DirectionReviewPage = () => {
     );
   });
 
-  const handleSubmit = () => {
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async () => {
     if (!direction) return;
-    updateDirection(direction.id, {
-      status: 'Завершено',
-      criteria: Object.fromEntries(
-        Object.entries(direction.criteria).map(([key, value]) => [
-          key,
-          { ...value, actual: actuals[key] ?? value.expected },
-        ]),
-      ),
-    });
-    navigate('/history');
+    setError('');
+    setIsSubmitting(true);
+    try {
+      await updateDirection(direction.id, {
+        status: 'Завершено',
+        criteria: Object.fromEntries(
+          Object.entries(direction.criteria).map(([key, value]) => [
+            key,
+            { ...value, actual: actuals[key] ?? value.expected },
+          ]),
+        ),
+      });
+      navigate('/history');
+    } catch {
+      setError('Не удалось сохранить проверку. Попробуйте снова.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!direction) {
@@ -101,13 +112,15 @@ const DirectionReviewPage = () => {
           <div className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-muted">
             Разница между ожиданием и реальностью показывает, насколько выбор оказался жизнеспособным.
           </div>
+          {error ? <p className="text-xs text-rose-300">{error}</p> : null}
           <div className="flex flex-wrap gap-3">
             <button
               type="button"
               onClick={handleSubmit}
-              className="rounded-full bg-accent px-6 py-2 text-sm font-semibold text-white shadow-glow"
+              disabled={isSubmitting}
+              className="rounded-full bg-accent px-6 py-2 text-sm font-semibold text-white shadow-glow disabled:cursor-not-allowed disabled:opacity-70"
             >
-              Завершить проверку
+              {isSubmitting ? 'Сохраняем...' : 'Завершить проверку'}
             </button>
             <Link to="/history" className="rounded-full border border-white/15 px-6 py-2 text-sm text-muted">
               Смотреть динамику
